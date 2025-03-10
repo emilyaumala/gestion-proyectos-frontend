@@ -21,7 +21,7 @@ function Formulario() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:5000/guardar", form);
+            const response = await axios.post("https://gestion-proyectos-backend-qzye.onrender.com/guardar", form);
             console.log(response.data); 
             alert("Datos guardados correctamente");
             setForm({ 
