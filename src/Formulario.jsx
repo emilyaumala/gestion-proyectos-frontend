@@ -2,53 +2,140 @@ import { useState } from "react";
 import axios from "axios";
 
 function Formulario() {
+    const { register, handleSubmit, reset } = useForm();
     const [form, setForm] = useState({
-        nombre_oportunidad: "",
-        asesor_comercial: "",
-        asesor_ventas: "",
-        cliente: "",
-        categoria_ventas: "",
-        cantidad_prevista: "",
-        fase_venta: "",
-        probabilidad_venta: "",
-        cierre_probable: ""
+      nombre_oportunidad: "",
+      asesor_comercial: "",
+      asesor_ventas: "",
+      cliente: "",
+      categoria_ventas: "",
+      cantidad_prevista: "",
+      fase_venta: "",
+      probabilidad_venta: "",
+      cierre_probable: "",
     });
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post("https://gestion-proyectos-backend-qzye.onrender.com/guardar", form);
-            console.log(response.data); 
-            alert("Datos guardados correctamente");
-            setForm({ 
-                nombre_oportunidad: "", asesor_comercial: "", asesor_ventas: "",
-                cliente: "", categoria_ventas: "", cantidad_prevista: "",
-                fase_venta: "", probabilidad_venta: "", cierre_probable: ""
-            });
-        } catch (err) {
-            console.error('Error al guardar los datos:', err);
-            alert("Hubo un error al guardar los datos");
-        }
-    };
+    const onSubmit = async (data) => {
+        const formattedData = {
+          nombre_oportunidad: data.nombre,
+          asesor_comercial: data.asesorComercial,
+          asesor_ventas: data.asesorVentas,
+          cliente: data.cliente,
+          categoria_ventas: data.categoriaVentas,
+          cantidad_prevista: parseFloat(data.cantidadPrevista) || 0,
+          fase_venta: data.faseVenta,
+          probabilidad_venta: parseFloat(data.probabilidadVenta) || 0,
+          cierre_probable: data.cierreProbable,
+        };
     
-    return (
-        <form onSubmit={handleSubmit}>
-            <input name="nombre_oportunidad" placeholder="Nombre de la Oportunidad" value={form.nombre_oportunidad} onChange={handleChange} />
-            <input name="asesor_comercial" placeholder="Asesor Comercial" value={form.asesor_comercial} onChange={handleChange} />
-            <input name="cliente" placeholder="Cliente" value={form.cliente} onChange={handleChange} />
-            <input name="categoria_ventas" placeholder="Categoría de Ventas" value={form.categoria_ventas} onChange={handleChange} />
-            <input name="cantidad_prevista" placeholder="Cantidad Prevista" value={form.cantidad_prevista} onChange={handleChange} />
-            <input name="fase_venta" placeholder="Fase de Venta" value={form.fase_venta} onChange={handleChange} />
-            <input name="probabilidad_venta" placeholder="Probabilidad de Venta" value={form.probabilidad_venta} onChange={handleChange} />
-            <input name="cierre_probable" placeholder="Cierre Probable" value={form.cierre_probable} onChange={handleChange} />
-            <button type="submit">Guardar</button>
-        </form>
-    );
-}
-
+        try {
+          await axios.post(`https://gestion-proyectos-backend-qzye.onrender.com/guardar`, formattedData);
+          alert("Proyecto guardado exitosamente");
+          reset();
+        } catch (error) {
+          alert("Error al guardar el proyecto");
+          console.error(error);
+        }
+      };
+    
+      return (
+        <Container maxWidth="sm">
+          <Box textAlign="center" my={4}>
+            <Typography variant="h4" fontWeight="bold">CONSTECOIN</Typography>
+            <Typography variant="h5" fontStyle="italic">Project Management</Typography>
+          </Box>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Nombre de la Oportunidad */}
+            <TextField
+              fullWidth
+              label="Nombre de la Oportunidad"
+              {...register("nombre", { required: true })}
+              margin="normal"
+            />
+            
+            {/* Asesor Comercial */}
+            <TextField
+              select
+              fullWidth
+              label="Asesor Comercial"
+              {...register("asesorComercial", { required: true })}
+              margin="normal"
+            >
+              <MenuItem value="asesor1">Asesor 1</MenuItem>
+              <MenuItem value="asesor2">Asesor 2</MenuItem>
+            </TextField>
+    
+            {/* Asesor de Ventas */}
+            <TextField
+              select
+              fullWidth
+              label="Asesor de Ventas"
+              {...register("asesorVentas", { required: true })}
+              margin="normal"
+            >
+              <MenuItem value="asesor1">Asesor 1</MenuItem>
+              <MenuItem value="asesor2">Asesor 2</MenuItem>
+            </TextField>
+    
+            {/* Cliente */}
+            <TextField
+              fullWidth
+              label="Cliente"
+              {...register("cliente", { required: true })}
+              margin="normal"
+            />
+    
+            {/* Categoría de Ventas */}
+            <TextField
+              fullWidth
+              label="Categoría de Ventas"
+              {...register("categoriaVentas", { required: true })}
+              margin="normal"
+            />
+            
+            {/* Cantidad Prevista */}
+            <TextField
+              fullWidth
+              label="Cantidad Prevista"
+              type="number"
+              {...register("cantidadPrevista", { required: true })}
+              margin="normal"
+            />
+            
+            {/* Fase de la Venta */}
+            <TextField
+              fullWidth
+              label="Fase de la Venta"
+              {...register("faseVenta", { required: true })}
+              margin="normal"
+            />
+            
+            {/* Probabilidad de Venta */}
+            <TextField
+              fullWidth
+              label="Probabilidad de Venta (%)"
+              type="number"
+              {...register("probabilidadVenta", { required: true })}
+              margin="normal"
+            />
+            
+            {/* Cierre Probable */}
+            <TextField
+              fullWidth
+              label="Cierre Probable"
+              type="date"
+              {...register("cierreProbable", { required: true })}
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+    
+            {/* Botón Guardar */}
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Guardar
+            </Button>
+          </form>
+        </Container>
+      );
+    }
 export default Formulario;
 
