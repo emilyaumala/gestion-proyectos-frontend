@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Home from "./Home";
 import Formulario from "./Formulario";
+import Proyectos from "./Proyectos"; // Asegúrate de importar el componente Proyecto
+import Oportunidades from "./Oportunidades"; // Asegúrate de importar el componente Proyectos
+import InformeProyecto from "./InformeProyecto";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -52,7 +56,17 @@ function App() {
         return <Formulario />;
     }
 
-    return <Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />;
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
+                <Route path="/proyectos" element={<Proyectos />} />
+                <Route path="/formulario" element={<Formulario />} />
+                <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
+                <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
