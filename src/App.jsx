@@ -18,12 +18,12 @@ function App() {
             localStorage.setItem("isLoggedIn", "true");
 
             // Configurar temporizador de inactividad
-            let logoutTimer = setTimeout(handleLogout, 300000); // 5 minutos
+            let logoutTimer = setTimeout(handleLogout, 600000); // 10 minutos
 
             // Reiniciar el temporizador en actividad del usuario
             const resetTimer = () => {
                 clearTimeout(logoutTimer);
-                logoutTimer = setTimeout(handleLogout, 300000);
+                logoutTimer = setTimeout(handleLogout, 600000);
             };
 
             window.addEventListener("mousemove", resetTimer);
