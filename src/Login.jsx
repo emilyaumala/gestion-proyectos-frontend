@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate(); // Inicializa el hook useNavigate
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -13,7 +11,6 @@ function Login({ onLogin }) {
 
         if (username === validUsername && password === validPassword) {
             onLogin();
-            navigate("/"); // Redirige al usuario a la página principal (Home) después de hacer login
         } else {
             alert("Usuario o contraseña incorrectos.");
         }
@@ -108,5 +105,4 @@ const styles = {
 };
 
 export default Login;
-
 
