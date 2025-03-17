@@ -6,6 +6,7 @@ import Formulario from "./Formulario";
 import Proyectos from "./Proyectos"; // Asegúrate de importar el componente Proyecto
 import Oportunidades from "./Oportunidades"; // Asegúrate de importar el componente Proyectos
 import InformeProyecto from "./InformeProyecto";
+import Proyeccion from "./Proyeccion";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/formulario" element={<Formulario />} />
                 <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
                 <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
+                <Route path="/forecast" element={<Proyeccion />} />
             </Routes>
         </Router>
     );
