@@ -144,7 +144,7 @@ import { SearchOutlined } from "@ant-design/icons";
               }}
             >
             <Typography.Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>
-              Informe del Proyecto : {nombreProyecto} 
+              Informe de la Oportunidad : {nombreProyecto} 
             </Typography.Title>
             <Typography.Text><strong>Área:</strong> {area}</Typography.Text>
               <Typography.Text><strong>Monto Estimado:</strong> {montoEstimado}</Typography.Text>

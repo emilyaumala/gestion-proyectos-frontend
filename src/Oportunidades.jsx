@@ -131,10 +131,10 @@ function Oportunidades() {
                     />
 
                     {/* Fecha de Inicio */}
-                    <TextField fullWidth label="Fecha de Inicio" type="date" {...register("fechaInicio", { required: true })} margin="normal" InputLabelProps={{ shrink: true }} />
+                    <TextField fullWidth label="Fecha de Inicio de la Actividad" type="date" {...register("fechaInicio", { required: true })} margin="normal" InputLabelProps={{ shrink: true }} />
 
                     {/* Fecha de Cierre */}
-                    <TextField fullWidth label="Fecha de Cierre" type="date" {...register("fechaCierre", { required: true })} margin="normal" InputLabelProps={{ shrink: true }} />
+                    <TextField fullWidth label="Fecha de Cierre de la Actividad" type="date" {...register("fechaCierre", { required: true })} margin="normal" InputLabelProps={{ shrink: true }} />
 
                     {/* Observaciones */}
                     <TextField fullWidth multiline rows={3} label="Observaciones" {...register("observaciones")} margin="normal" />
@@ -149,4 +149,3 @@ function Oportunidades() {
 }
 
 export default Oportunidades;
-

@@ -71,6 +71,8 @@
                 observaciones: data.observaciones || "Sin observaciones",
                 cantidadLapso: data.cantidadLapso,
                 unidadLapso: data.unidadLapso,
+                faseVenta: data.faseVenta, // Enviamos la fase de venta
+    montoEstimado: parseFloat(data.montoEstimado) || 0, // Enviamos el monto estimado
             };
             
             try {
@@ -269,7 +271,7 @@
         {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
         <TextField
           fullWidth
-          label="Cantidad"
+          label="Lapso de Ejecución (Cantidad)"
           type="number"
           {...register("cantidadLapso", { required: true, min: 1 })}
           margin="normal"
