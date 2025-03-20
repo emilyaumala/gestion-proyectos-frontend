@@ -19,7 +19,7 @@ function App() {
         if (isLoggedIn) {
             localStorage.setItem("isLoggedIn", "true");
 
-            // Configurar temporizador de inactividad
+            // Configurar temporizaaaaaador de inactividad
             let logoutTimer = setTimeout(handleLogout, 600000); // 10 minutos
 
             // Reiniciar el temporizador en actividad del usuario
