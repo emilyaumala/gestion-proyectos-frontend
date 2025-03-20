@@ -7,6 +7,7 @@ import Proyectos from "./Proyectos"; // Asegúrate de importar el componente Pro
 import Oportunidades from "./Oportunidades"; // Asegúrate de importar el componente Proyectos
 import InformeProyecto from "./InformeProyecto";
 import Proyeccion from "./Proyeccion";
+import CambioPwd from "./CambioPwd"
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -18,7 +19,7 @@ function App() {
         if (isLoggedIn) {
             localStorage.setItem("isLoggedIn", "true");
 
-            // Configurar temporizador de inactividad
+            // Configurar temporizaaaaaador de inactividad
             let logoutTimer = setTimeout(handleLogout, 600000); // 10 minutos
 
             // Reiniciar el temporizador en actividad del usuario
@@ -66,6 +67,7 @@ function App() {
                 <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
                 <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
                 <Route path="/forecast" element={<Proyeccion />} />
+                <Route path="/cambio-contrasenia" element={<CambioPwd />} />
             </Routes>
         </Router>
     );

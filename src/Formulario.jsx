@@ -41,28 +41,26 @@ function Formulario() {
                     axios.get(`${API_URL}/responsables-tecnicos`)
                 ]);
 
-                setClientes(clientesRes.data);
-                setAreas(areasRes.data);
-                setFasesVenta(fasesVentaRes.data);
-                setProbabilidades(probVentaRes.data);
-                setResponsablesComerciales(respComercialRes.data);
-                setResponsablesTecnicos(respTecnicoRes.data);
-            } catch (error) {
-                console.error("❌ Error al obtener datos:", error);
-                setError("Hubo un problema al cargar los datos.");
-            }
-        };
+                    setClientes(clientesRes.data);
+                    setAreas(areasRes.data);
+                    setFasesVenta(fasesVentaRes.data);
+                    setProbabilidades(probVentaRes.data);
+                    setResponsablesComerciales(respComercialRes.data);
+                    setResponsablesTecnicos(respTecnicoRes.data);
+                } catch (error) {
+                    console.error("❌ Error al obtener datos:", error);
+                    setError("Hubo un problema al cargar los datos.");
+                }
+            };
 
-        return () => {
-            window.removeEventListener("popstate", handlePopState); // Limpiar el evento cuando se desmonte el componente
-          };
-        }, [ navigate]);
-        
-    const onSubmit = async (data) => {
-        if (clienteError || areaError || faseVentaError || respComercialError || respTecnicoError) {
-            alert("Corrige los errores antes de enviar el formulario.");
-            return;
-        }
+            fetchData();
+        }, []);
+
+        const onSubmit = async (data) => {
+            if (clienteError || areaError || faseVentaError || respComercialError || respTecnicoError) {
+                alert("Corrige los errores antes de enviar el formulario.");
+                return;
+            }
 
         const formattedData = {
             cliente: data.cliente,
@@ -89,21 +87,21 @@ function Formulario() {
             // Redirige a la página /formulario después de guardar el proyecto
             navigate("/formulario");
 
-            reset();
-            setError(null);
-            setClienteError("");
-            setAreaError("");
-            setFaseVentaError("");
-            setRespComercialError("");
-            setRespTecnicoError("");
-        } catch (error) {
-            console.error("❌ Error al guardar el proyecto:", error);
-            setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
-        }
-    };
+                reset();
+                setError(null);
+                setClienteError("");
+                setAreaError("");
+                setFaseVentaError("");
+                setRespComercialError("");
+                setRespTecnicoError("");
+            } catch (error) {
+                console.error("❌ Error al guardar el proyecto:", error);
+                setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
+            }
+        };
 
-    const handleClienteChange = (event1, value) => {
-        const clienteExiste = clientes.some(cliente => cliente.cliente.toLowerCase() === (value?.toLowerCase() || ""));
+        const handleClienteChange = (event1, value) => {
+            const clienteExiste = clientes.some(cliente => cliente.cliente.toLowerCase() === (value?.toLowerCase() || ""));
 
         if (value && !clienteExiste) {
             setClienteError(`El cliente '${value}' no existe, pídele al administrador que lo agregue.`);
@@ -272,8 +270,40 @@ function Formulario() {
                         margin="normal"
                         InputLabelProps={{ shrink: true }}
                     />
+                    {/* Fecha de Inicio */}
+                    <TextField
+                        fullWidth
+                        label="Fecha de Inicio"
+                        type="month"
+                        {...register("fechaInicio", { required: true })}
+                        margin="normal"
+                        InputLabelProps={{ shrink: true }}
+                    />
 
 
+                    {/* Lapso de Ejecución */}
+                    <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
+                        <TextField
+                            fullWidth
+                            label="Lapso de Ejecución (Cantidad)"
+                            type="number"
+                            {...register("cantidadLapso", { required: true, min: 1 })}
+                            margin="normal"
+                        />
+                        {/* Selector de Unidad de Tiempo (Días, Meses, Años) */}
+                        <TextField
+                            select
+                            label="Unidad de Tiempo"
+                            fullWidth
+                            {...register("unidadLapso", { required: true })}
+                            margin="normal"
+                        >
+                            <MenuItem value="días">Día(s)</MenuItem>
+                            <MenuItem value="meses">Mes(es)</MenuItem>
+                            <MenuItem value="años">Año(s)</MenuItem>
+                        </TextField>
+                    </div>
                     {/* Lapso de Ejecución */}
                     <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                         {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
@@ -360,14 +390,14 @@ function Formulario() {
                     {/* Observaciones */}
                     <TextField fullWidth multiline rows={3} label="Observaciones" {...register("observaciones")} margin="normal" />
 
-                    <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-                        Guardar Proyecto
-                    </Button>
-                </Box>
-            </Container>
-        </Box>
-    );
-}
+                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                            Guardar Proyecto
+                        </Button>
+                    </Box>
+                </Container>
+            </Box>
+        );
+    }
 
 export default Formulario;
 
