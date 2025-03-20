@@ -104,7 +104,7 @@ const Proyeccion = () => {
     },
     {
       title: "Cliente",
-      dataIndex: "cliente",
+      dataIndex:  "cliente",
       key: "cliente",
     },
     {
