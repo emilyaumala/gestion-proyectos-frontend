@@ -14,18 +14,16 @@ function Home({ onLogout }) {
                 >
                     📋 Agregar Oportunidad
                 </button>
-
+                <button style={styles.button}
+                onClick={() => navigate("/actualizar-oportunidades")}>
+                    📋 Actualizar Oportunidad
+                </button> 
                 <button
                     style={styles.button}
                     onClick={() => navigate("/proyectos")}  // Usa navigate para redirigir a proyectos
                 >
                     📊 Ver Oportunidades
                 </button>
-                <button style={styles.button}
-                onClick={() => navigate("/actualizar-oportunidades")}>
-                    📋 Actualizar Oportunidad
-                </button> 
-
                 <button style={styles.button}
                 onClick={() => navigate("/forecast")}>
                     📊 Proyección

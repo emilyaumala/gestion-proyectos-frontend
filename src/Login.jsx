@@ -26,7 +26,7 @@ function Login({ onLogin }) {
                     style={styles.logo} 
                 />
                 <h2 style={styles.title}>Constecoin</h2>
-                <h3 style={styles.subtitle}>Gestión de Proyectos</h3>
+                <h3 style={styles.subtitle}>Gestión de Oportunidades</h3>
 
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <input
@@ -85,10 +85,10 @@ const styles = {
         marginBottom: "20px",
     },
     input: {
-        width: "100%",
+        width: "90%",
         padding: "10px",
         margin: "10px 0",
-        borderRadius: "5px",
+        borderRadius: "50px",
         border: "1px solid #ccc",
         fontSize: "16px",
     },
@@ -100,7 +100,8 @@ const styles = {
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
-        width: "100%",
+        width: "40%",
+        margin: "10px 0"
     },
 };
 

@@ -143,7 +143,7 @@ const Proyectos = () => {
       ...getColumnSearchProps("nombreProyecto"),
       render: (text) => text || "No disponible",  // Renderiza "No disponible" si es null
     },
-    {
+    /*{
       title: "Monto Estimado",
       dataIndex: "montoEstimado",
       key: "montoEstimado",
@@ -189,7 +189,7 @@ const Proyectos = () => {
           return lapsoTexto;
         },
         ...getColumnSearchProps2("lapsoEjecucion") // Utiliza el filtro aquí
-      },      
+      },  */    
       
     {
       title: "Responsable Comercial",
@@ -205,13 +205,13 @@ const Proyectos = () => {
       ...getColumnSearchProps("respTecnico", "respTecnico"), // Acceder a la propiedad respTecnico dentro del objeto respTecnico
       render: (respTecnico) => respTecnico ? respTecnico.respTecnico : "No disponible",  // Muestra "No disponible" si es null
     },
-    {
+   /* {
       title: "Observaciones",
       dataIndex: "observaciones",
       key: "observaciones",
       ...getColumnSearchProps("observaciones"),
       render: (text) => text || "No disponible",  // Si no hay observaciones, muestra "No disponible"
-    },
+    },*/
     {
   title: "Acciones",
   key: "acciones",
@@ -243,18 +243,44 @@ const Proyectos = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Lista de Proyectos</h2>
-      <Table
-        columns={columnas}
-        dataSource={filteredData}
-        rowKey="_id"
-        onChange={(pagination, filters, sorter) => {
-          // Logic to handle sorting or other changes in table
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#f4f4f4",
+        margin: 0, // Asegura que no haya márgenes que desajusten el centrado
+      }}
+    >
+      <div
+        style={{
+          width: "90%",
+          maxWidth: "1200px",
+          height: "auto", // Esto asegura que el contenido se ajuste al tamaño de la pantalla
+          backgroundColor: "white",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start", // Alinea los elementos hacia el principio
+          alignItems: "center",
         }}
-      />
+      >
+        <h2 style={{ textAlign: "center" }}>Lista de Proyectos</h2>
+        <Table
+          columns={columnas}
+          dataSource={filteredData}
+          rowKey="_id"
+          onChange={(pagination, filters, sorter) => {
+            // Logic to handle sorting or other changes in table
+          }}
+          style={{ width: "100%" }}
+        />
+      </div>
     </div>
   );
 };
-
 export default Proyectos;
