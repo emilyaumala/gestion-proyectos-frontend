@@ -269,7 +269,7 @@ const Proyectos = () => {
           alignItems: "center",
         }}
       >
-        <h2 style={{ textAlign: "center" }}>Lista de Proyectos</h2>
+        <h2 style={{ textAlign: "center", color:"#333333" }}>Lista de Proyectos</h2>
         <Table
           columns={columnas}
           dataSource={filteredData}

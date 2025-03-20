@@ -189,6 +189,7 @@ function Oportunidades() {
                     <Typography
                         variant="h4"
                         fontWeight="bold"
+                        color="#333333"
                         sx={{ mb: 2, textAlign: "center" }}
                     >
                         Oportunidad del Proyecto

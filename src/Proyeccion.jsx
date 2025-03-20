@@ -163,7 +163,7 @@ const Proyeccion = () => {
       {/* Tabla de Proyectos */}
       <div style={styles.tableContainer}>
         <div style={styles.tableWrapper}>
-          <h3>Pronóstico por Proyecto</h3>
+          <h3 style={{ color:"#333333" }}>Pronóstico por Proyecto</h3>
           <Table
             columns={columnsProyecto}
             dataSource={proyectos}
@@ -176,7 +176,7 @@ const Proyeccion = () => {
       {/* Tabla de Forecast Mensual y Acumulado */}
       <div style={styles.tableContainer}>
         <div style={styles.tableWrapper}>
-          <h3>Pronóstico Mensual y Acumulado</h3>
+          <h3 style={{ color:"#333333" }}>Pronóstico Mensual y Acumulado</h3>
           <Table
             columns={columnsMeses}
             dataSource={mesesTableData}
@@ -189,7 +189,7 @@ const Proyeccion = () => {
       {/* Gráfico de Barras */}
       <div style={styles.tableContainer}>
         <div style={styles.tableWrapper}>
-          <h3>Gráfico de Forecast Mensual vs Acumulado</h3>
+          <h3 style={{ color:"#333333" }}>Gráfico de Forecast Mensual vs Acumulado</h3>
           <Bar data={chartData} options={chartOptions} />
         </div>
       </div>

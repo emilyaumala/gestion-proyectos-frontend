@@ -160,7 +160,7 @@ function Formulario() {
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "100%", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
-                    <Typography variant="h4" fontWeight="bold" sx={{ mb: 2, textAlign: "center" }}>Agregar Oportunidad</Typography>
+                    <Typography variant="h4" fontWeight="bold" color= "#333333" sx={{ mb: 2, textAlign: "center"}}>Agregar Oportunidad</Typography>
 
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                     {clienteError && <Alert severity="error" sx={{ mb: 2 }}>{clienteError}</Alert>}
@@ -270,15 +270,6 @@ function Formulario() {
                         margin="normal"
                         InputLabelProps={{ shrink: true }}
                     />
-                    {/* Fecha de Inicio */}
-                    <TextField
-                        fullWidth
-                        label="Fecha de Inicio"
-                        type="month"
-                        {...register("fechaInicio", { required: true })}
-                        margin="normal"
-                        InputLabelProps={{ shrink: true }}
-                    />
 
 
                     {/* Lapso de Ejecución */}
@@ -304,31 +295,6 @@ function Formulario() {
                             <MenuItem value="años">Año(s)</MenuItem>
                         </TextField>
                     </div>
-                    {/* Lapso de Ejecución */}
-                    <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
-                        <TextField
-                            fullWidth
-                            label="Lapso de Ejecución (Cantidad)"
-                            type="number"
-                            {...register("cantidadLapso", { required: true, min: 1 })}
-                            margin="normal"
-                        />
-                        {/* Selector de Unidad de Tiempo (Días, Meses, Años) */}
-                        <TextField
-                            select
-                            label="Unidad de Tiempo"
-                            fullWidth
-                            {...register("unidadLapso", { required: true })}
-                            margin="normal"
-                        >
-                            <MenuItem value="días">Día(s)</MenuItem>
-                            <MenuItem value="meses">Mes(es)</MenuItem>
-                            <MenuItem value="años">Año(s)</MenuItem>
-                        </TextField>
-                    </div>
-
-
 
                     {/* Responsable Comercial */}
                     {/* <TextField select fullWidth label="Responsable Comercial" {...register("respComercial", { required: true })} margin="normal">
