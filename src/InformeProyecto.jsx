@@ -28,7 +28,7 @@ const InformeProyecto = () => {
 
   useEffect(() => {
     axios
-      .get(`https://gestion-proyectos-backend-qzye.onrender.com/informeOportunidad/${id}`)
+      .get(`https://crm.constecoin.com/apicrm/informeOportunidad/${id}`)
       .then((response) => {
         console.log("📌 Respuesta del backend:", response.data);
 

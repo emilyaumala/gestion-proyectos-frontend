@@ -10,7 +10,7 @@ const Proyeccion = () => {
 
   useEffect(() => {
     axios
-      .get("https://gestion-proyectos-backend-qzye.onrender.com/forecast")
+      .get("https://crm.constecoin.com/apicrm/forecast")
       .then((response) => {
         setProyectos(response.data);
         setLoading(false);

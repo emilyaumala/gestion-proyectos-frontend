@@ -9,7 +9,7 @@ const Proyectos = () => {
 
   useEffect(() => {
     axios
-      .get("https://gestion-proyectos-backend-qzye.onrender.com/proyectos")
+      .get("https://crm.constecoin.com/apicrm/proyectos")
       .then((response) => {
         setProyectos(response.data);
         setFilteredData(response.data);
