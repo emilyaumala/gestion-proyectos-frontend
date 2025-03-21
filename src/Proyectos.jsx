@@ -9,7 +9,7 @@ const Proyectos = () => {
 
   useEffect(() => {
     axios
-      .get("https://gestion-proyectos-backend-qzye.onrender.com/proyectos")
+      .get("http://157.100.18.146:5326/apicrm/proyectos")
       .then((response) => {
         setProyectos(response.data);
         setFilteredData(response.data);
