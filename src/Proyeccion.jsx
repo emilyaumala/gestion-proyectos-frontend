@@ -10,7 +10,7 @@ const Proyeccion = () => {
 
   useEffect(() => {
     axios
-      .get("http://157.100.18.146:5326/apicrm/forecast")
+      .get("https://gestion-proyectos-backend-qzye.onrender.com/forecast")
       .then((response) => {
         setProyectos(response.data);
         setLoading(false);
@@ -159,99 +159,92 @@ const Proyeccion = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>📈 Proyección de Proyectos</h1>
-
+  
       {/* Tabla de Proyectos */}
-      <div style={styles.tableContainer}>
-        <div style={styles.tableWrapper}>
-          <h3 style={{ color:"#333333" }}>Pronóstico por Proyecto</h3>
+      <div style={styles.responsiveBox}>
+        <h3 style={styles.sectionTitle}>Pronóstico por Proyecto</h3>
+        <div style={styles.scrollWrapper}>
           <Table
             columns={columnsProyecto}
             dataSource={proyectos}
             pagination={false}
-            scroll={{ y: 300 }}
+            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
           />
         </div>
       </div>
-
+  
       {/* Tabla de Forecast Mensual y Acumulado */}
-      <div style={styles.tableContainer}>
-        <div style={styles.tableWrapper}>
-          <h3 style={{ color:"#333333" }}>Pronóstico Mensual y Acumulado</h3>
+      <div style={styles.responsiveBox}>
+        <h3 style={styles.sectionTitle}>Pronóstico Mensual y Acumulado</h3>
+        <div style={styles.scrollWrapper}>
           <Table
             columns={columnsMeses}
             dataSource={mesesTableData}
             pagination={false}
-            scroll={{ y: 300 }}
+            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
           />
         </div>
       </div>
-
+  
       {/* Gráfico de Barras */}
-      <div style={styles.tableContainer}>
-        <div style={styles.tableWrapper}>
-          <h3 style={{ color:"#333333" }}>Gráfico de Forecast Mensual vs Acumulado</h3>
-          <Bar data={chartData} options={chartOptions} />
-        </div>
+      <div style={styles.chartWrapper}>
+        <h3 style={styles.sectionTitle}>Gráfico de Forecast Mensual vs Acumulado</h3>
+        <Bar data={chartData} options={chartOptions} />
       </div>
     </div>
   );
 };
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    minHeight: "100vh",
-    width: "100%",
-    backgroundColor: "#f4f4f4",
-    textAlign: "center",
-    padding: "20px",
-    overflowY: "auto",
-    overflowX: "auto",
-    boxSizing: "border-box",
-  },
-  title: {
-    fontSize: "28px",
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: "20px",
-  },
-  tableContainer: {
-    width: "90%",
-    marginBottom: "40px",
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  tableWrapper: {
-    width: "100%",
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    boxSizing: "border-box",
-    textAlign: "center",
-  },
-  chartContainer: {
-    width: "90%",
-    marginBottom: "40px",
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  chartWrapper: {
-    width: "100%",
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    boxSizing: "border-box",
-    textAlign: "center",
-  },
-};
+  
+  const styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",       // Centra todo el contenido horizontalmente
+      justifyContent: "flex-start",
+      minHeight: "100vh",
+      width: "100%",
+      backgroundColor: "#f4f4f4",
+      padding: "5vw",            // Uso de unidades relativas
+      boxSizing: "border-box",
+    },
+    title: {
+      fontSize: "3vw",           // Uso de unidades relativas
+      fontWeight: "bold",
+      color: "#333",
+      marginBottom: "2vw",       // Margen relativo
+      textAlign: "center",       // Centra el título principal
+    },
+    responsiveBox: {
+      width: "100%",
+      maxWidth: "95%",           // Se ajusta al 95% del ancho de la pantalla
+      marginBottom: "3vw",       // Margen relativo
+      backgroundColor: "#fff",
+      padding: "4vw",            // Uso de unidades relativas
+      borderRadius: "1vw",       // Bordes redondeados con tamaño relativo
+      boxShadow: "0 0.5vw 1vw rgba(0, 0, 0, 0.1)",  // Sombra con tamaños relativos
+      boxSizing: "border-box",
+    },
+    sectionTitle: {
+      color: "#333333",
+      marginBottom: "1vw",       // Margen relativo
+      fontSize: "2vw",           // Fuente con tamaño relativo
+      textAlign: "center",       // Centra todos los títulos de las secciones
+    },
+    scrollWrapper: {
+      width: "100%",
+      overflowX: "auto",    // Habilita scroll horizontal
+      overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
+    },
+    chartWrapper: {
+      display: "flex",              // Usamos flexbox para centrar el gráfico
+      flexDirection: "column",
+      alignItems: "center",         // Centra el gráfico horizontalmente
+      justifyContent: "center",     // Centra el gráfico verticalmente
+      width: "100%",
+      minHeight: "30vw",            // Ajuste dinámico para gráficos
+      marginBottom: "3vw",          // Margen relativo
+    },
+  };
+  
 
 export default Proyeccion;

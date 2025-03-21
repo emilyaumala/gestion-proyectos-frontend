@@ -4,7 +4,7 @@ import { TextField, Button, MenuItem, Container, Typography, Box, Alert, Autocom
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
-const API_URL = "http://157.100.18.146:5326/apicrm";
+const API_URL = "https://gestion-proyectos-backend-qzye.onrender.com";
 
 function Formulario() {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -159,7 +159,7 @@ function Formulario() {
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
-                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "100%", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "auto", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
                     <Typography variant="h4" fontWeight="bold" color= "#333333" sx={{ mb: 2, textAlign: "center"}}>Agregar Oportunidad</Typography>
 
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

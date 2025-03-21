@@ -90,7 +90,7 @@ const styles = {
         margin: "10px 0",
         borderRadius: "50px",
         border: "1px solid #ccc",
-        fontSize: "16px",
+        fontSize: "16px"
     },
     button: {
         padding: "10px",

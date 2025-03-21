@@ -28,7 +28,7 @@ const InformeProyecto = () => {
 
   useEffect(() => {
     axios
-      .get(`http://157.100.18.146:5326/apicrm/informeOportunidad/${id}`)
+      .get(`https://gestion-proyectos-backend-qzye.onrender.com/informeOportunidad/${id}`)
       .then((response) => {
         console.log("📌 Respuesta del backend:", response.data);
 
@@ -247,62 +247,87 @@ const InformeProyecto = () => {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
-        height: "100vh",
+        justifyContent: "center",
+        minHeight: "100vh",
         width: "100vw",
         backgroundColor: "#f4f4f4",
-        margin: 0, // Asegura que no haya márgenes que desajusten el centrado
+        padding: "4vw", // Espaciado adaptable
+        boxSizing: "border-box",
+        margin: 0,
       }}
     >
       <div
         style={{
-          width: "90%",
+          width: "100%",
           maxWidth: "1200px",
-          height: "auto", // Esto asegura que el contenido se ajuste al tamaño de la pantalla
           backgroundColor: "white",
-          padding: "20px",
+          padding: "clamp(16px, 4vw, 32px)", // Padding adaptable a la pantalla
           borderRadius: "12px",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-start", // Alinea los elementos hacia el principio
           alignItems: "center",
         }}
       >
-        <Typography.Title level={3} style={{ textAlign: "center", marginBottom: "30px" }}>
+        <Typography.Title
+          level={3}
+          style={{
+            textAlign: "center",
+            marginBottom: "clamp(16px, 4vw, 30px)", // Margen adaptable
+            fontSize: "clamp(20px, 4vw, 28px)",
+          }}
+        >
           Informe de Oportunidad: {nombreProyecto}
         </Typography.Title>
-        <Space direction="vertical" size="middle" style={{ marginBottom: "30px" }}>
-          <Typography.Text><strong>Cliente:</strong> {cliente}</Typography.Text>
-          <Typography.Text><strong>Área:</strong> {area}</Typography.Text>
-          <Typography.Text><strong>Código del Proyecto:</strong> {codigoProyecto}</Typography.Text>
+  
+        <Space
+          direction="vertical"
+          size="middle"
+          style={{ marginBottom: "clamp(16px, 4vw, 30px)", width: "100%" }}
+        >
+          <Typography.Text>
+            <strong>Cliente:</strong> {cliente}
+          </Typography.Text>
+          <Typography.Text>
+            <strong>Área:</strong> {area}
+          </Typography.Text>
+          <Typography.Text>
+            <strong>Código del Proyecto:</strong> {codigoProyecto}
+          </Typography.Text>
         </Space>
-        <Table
-          columns={columnas}
-          dataSource={filteredData}
-          rowKey="_id"
-          loading={loading}
-          pagination={{ pageSize: 5 }}
-          bordered
-          style={{ width: "100%" }}
-        />
+  
+        <div style={{ width: "100%", overflowX: "auto" }}>
+          <Table
+            columns={columnas}
+            dataSource={filteredData}
+            rowKey="_id"
+            loading={loading}
+            pagination={{ pageSize: 5 }}
+            bordered
+            style={{ minWidth: "600px" }} // Asegura scroll lateral en móvil
+          />
+        </div>
+  
         <Button
           type="primary"
           onClick={handleDownloadPDF}
           style={{
-            marginTop: "20px",
-            backgroundColor: "#808080", // Gris
-            borderColor: "#808080", // Gris en el borde
-            color: "white", // Color del texto
+            marginTop: "clamp(16px, 4vw, 20px)",
+            backgroundColor: "#808080",
+            borderColor: "#808080",
+            color: "white",
+            fontSize: "clamp(14px, 2.5vw, 16px)",
+            padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)",
           }}
         >
           🖨️
         </Button>
-
       </div>
     </div>
   );
+  
 };
 
 export default InformeProyecto;

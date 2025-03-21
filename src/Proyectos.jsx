@@ -9,7 +9,7 @@ const Proyectos = () => {
 
   useEffect(() => {
     axios
-      .get("http://157.100.18.146:5326/apicrm/proyectos")
+      .get("https://gestion-proyectos-backend-qzye.onrender.com/proyectos")
       .then((response) => {
         setProyectos(response.data);
         setFilteredData(response.data);
@@ -137,7 +137,7 @@ const Proyectos = () => {
       render: (area) => area ? area.area : "No disponible",  // Renderiza "No disponible" si es null
     },
     {
-      title: "Proyecto",
+      title: "Oportunidad",
       dataIndex: "nombreProyecto",
       key: "nombreProyecto",
       ...getColumnSearchProps("nombreProyecto"),
@@ -241,46 +241,59 @@ const Proyectos = () => {
   const handleReset = () => {
     setFilteredData(proyectos);
   };
-
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        minHeight: "100vh",
         width: "100vw",
         backgroundColor: "#f4f4f4",
-        margin: 0, // Asegura que no haya márgenes que desajusten el centrado
+        padding: "4vw", // Espaciado responsive
+        boxSizing: "border-box",
+        margin: 0,
       }}
     >
       <div
         style={{
-          width: "90%",
+          width: "100%",
           maxWidth: "1200px",
-          height: "auto", // Esto asegura que el contenido se ajuste al tamaño de la pantalla
-          backgroundColor: "white",
-          padding: "20px",
+          backgroundColor: "#ffffff",
+          padding: "clamp(16px, 4vw, 32px)", // Escala según pantalla
           borderRadius: "12px",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-start", // Alinea los elementos hacia el principio
           alignItems: "center",
+          overflow: "hidden", // Previene scroll innecesario en el div principal
         }}
       >
-        <h2 style={{ textAlign: "center", color:"#333333" }}>Lista de Proyectos</h2>
-        <Table
-          columns={columnas}
-          dataSource={filteredData}
-          rowKey="_id"
-          onChange={(pagination, filters, sorter) => {
-            // Logic to handle sorting or other changes in table
-          }}
-          style={{ width: "100%" }}
-        />
+        <h2 style={{
+          textAlign: "center",
+          color: "#333333",
+          fontSize: "clamp(20px, 4vw, 28px)", // Escala en móvil/desktop
+          marginBottom: "1rem",
+        }}>
+          Lista de Oportunidades
+        </h2>
+  
+        {/* Tabla con scroll horizontal si es necesario */}
+        <div style={{ width: "100%", overflowX: "auto" }}>
+          <Table
+            columns={columnas}
+            dataSource={filteredData}
+            rowKey="_id"
+            pagination={{ pageSize: 10 }}
+            onChange={(pagination, filters, sorter) => {
+              // lógica para ordenar
+            }}
+            style={{ minWidth: "600px" }} // Asegura legibilidad en pantallas chicas con scroll lateral
+          />
+        </div>
       </div>
     </div>
   );
+  
 };
 export default Proyectos;
