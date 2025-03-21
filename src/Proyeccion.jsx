@@ -10,7 +10,7 @@ const Proyeccion = () => {
 
   useEffect(() => {
     axios
-      .get("http://157.100.18.146:5326/apicrm/forecast")
+      .get("https://crm.constecoin.com/apicrm/forecast")
       .then((response) => {
         setProyectos(response.data);
         setLoading(false);

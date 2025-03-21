@@ -3,7 +3,7 @@ import { TextField, Button, Container, Typography, Box, Grid, Alert, MenuItem, A
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://157.100.18.146:5326/apicrm/";
+const API_URL = "https://crm.constecoin.com/apicrm/";
 
 function Oportunidades() {
     const [proyectos, setProyectos] = useState([]);

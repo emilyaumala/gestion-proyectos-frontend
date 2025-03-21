@@ -28,7 +28,7 @@ const InformeProyecto = () => {
 
   useEffect(() => {
     axios
-      .get(`http://157.100.18.146:5326/apicrm/informeOportunidad/${id}`)
+      .get(`https://crm.constecoin.com/apicrm/informeOportunidad/${id}`)
       .then((response) => {
         console.log("📌 Respuesta del backend:", response.data);
 
