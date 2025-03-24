@@ -78,12 +78,12 @@ function Oportunidades() {
         };
     }, [navigate]);
     
-    const formatDateToMonthYear = (date) => {
-        const d = new Date(date);
-        const month = d.getMonth() + 1; // Los meses en JavaScript empiezan desde 0
-        const year = d.getFullYear();
-        return `${year}-${month < 10 ? '0' + month : month}`; // Formato 'YYYY-MM'
+    const formatDateToMonthYear = (dateString) => {
+        const [year, month] = dateString.split("T")[0].split("-");
+        return `${year}-${month}`; // Ej: 2025-03
     };
+    
+    
 
     const handleAreaChange = (event) => {
         const selectedArea = areas.find(a => a._id === event.target.value);

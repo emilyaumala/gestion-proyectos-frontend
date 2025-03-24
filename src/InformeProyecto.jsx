@@ -39,7 +39,7 @@ const InformeProyecto = () => {
         setMontoEstimado(response.data.montoEstimado || "Monto no disponible");
         setFaseVentaProyecto(response.data.faseVentaProyecto || "Fase no disponible");
         setProbabilidadVenta(response.data.probabilidadVenta || "Prob no disponible");
-        setFechaInicio(response.data.fechaInicio ? new Date(response.data.fechaInicio).toLocaleDateString("es-ES") : "No disponible");
+        setFechaInicio(response.data.fechaInicio|| "No disponible");
         setRespComercial(response.data.respComercial || "No disponible");
         setRespTecnico(response.data.respTecnico || "No disponible");
         setObservaciones(response.data.observaciones || "No disponible");

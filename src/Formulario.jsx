@@ -63,14 +63,14 @@ function Formulario() {
             return;
         }
 
-        const codigoExiste = proyectosExistentes.some(
-            (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
-        );
+      //  const codigoExiste = proyectosExistentes.some(
+      //      (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
+     //   );
 
-        if (codigoExiste) {
-            alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
-            return;
-        }
+      //  if (codigoExiste) {
+       //     alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
+      //      return;
+     //   }
 
         const formattedData = {
             cliente: data.cliente,
@@ -221,8 +221,8 @@ function Formulario() {
 
                     {/* Nombre del Proyecto */}
                     <TextField fullWidth label="Nombre del Proyecto" {...register("nombreProyecto", { required: true })} margin="normal" />
-                    {/* Nombre del Proyecto */}
-                    <TextField fullWidth label="Código Proyecto" {...register("codigoProyecto", { required: true })} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
+                    {/* Código Oportunidad */}  
+                    <TextField fullWidth label="Código de Oportunidad AS2 (Opocional)" {...register("codigoProyecto")} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
                     {/* Fase de Venta */}
                     {faseVentaError && <Alert severity="error" sx={{ mb: 2 }}>{faseVentaError}</Alert>}
                     <Autocomplete
@@ -271,7 +271,7 @@ function Formulario() {
                     {/* Fecha de Inicio */}
                     <TextField
                         fullWidth
-                        label="Fecha de Inicio"
+                        label="Fecha Probable de Cierre"
                         type="month"
                         {...register("fechaInicio", { required: true })}
                         margin="normal"
@@ -279,29 +279,29 @@ function Formulario() {
                     />
 
 
-                    {/* Lapso de Ejecución */}
+                    {/* Lapso de Ejecución 
                     <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
+                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) 
                         <TextField
                             fullWidth
                             label="Lapso de Ejecución (Cantidad)"
                             type="number"
-                            {...register("cantidadLapso", { required: true, min: 1 })}
+                            {...register("cantidadLapso", { required: false, min: 1 })}
                             margin="normal"
                         />
-                        {/* Selector de Unidad de Tiempo (Días, Meses, Años) */}
+                        {/* Selector de Unidad de Tiempo (Días, Meses, Años)
                         <TextField
                             select
                             label="Unidad de Tiempo"
                             fullWidth
-                            {...register("unidadLapso", { required: true })}
+                            {...register("unidadLapso", { required: false })}
                             margin="normal"
                         >
                             <MenuItem value="días">Día(s)</MenuItem>
                             <MenuItem value="meses">Mes(es)</MenuItem>
                             <MenuItem value="años">Año(s)</MenuItem>
                         </TextField>
-                    </div>
+                    </div>*/}
 
                     {/* Responsable Comercial */}
                     {/* <TextField select fullWidth label="Responsable Comercial" {...register("respComercial", { required: true })} margin="normal">
@@ -361,7 +361,7 @@ function Formulario() {
                     />
 
                     {/* Observaciones */}
-                    <TextField fullWidth multiline rows={3} label="Observaciones" {...register("observaciones")} margin="normal" />
+                    <TextField fullWidth multiline rows={3} label="Descripción de Oportunidad" {...register("observaciones")} margin="normal" />
 
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Guardar Oportunidad
