@@ -104,7 +104,7 @@ const Proyeccion = () => {
     },
     {
       title: "Cliente",
-      dataIndex:  "cliente",
+      dataIndex: "cliente",
       key: "cliente",
     },
     {
@@ -169,7 +169,7 @@ const Proyeccion = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>📈 Proyección de Proyectos</h1>
-  
+
       {/* Tabla de Proyectos */}
       <div style={styles.responsiveBox}>
         <h3 style={styles.sectionTitle}>Pronóstico por Proyecto</h3>
@@ -177,12 +177,14 @@ const Proyeccion = () => {
           <Table
             columns={columnsProyecto}
             dataSource={proyectos}
-            pagination={false}
-            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
+            pagination={{ pageSize: 5 }}
+            bordered
+            style={{ minWidth: "600px" }}
+          // Ajuste para scroll horizontal
           />
         </div>
       </div>
-  
+
       {/* Tabla de Forecast Mensual y Acumulado */}
       <div style={styles.responsiveBox}>
         <h3 style={styles.sectionTitle}>Pronóstico Mensual y Acumulado</h3>
@@ -191,11 +193,11 @@ const Proyeccion = () => {
             columns={columnsMeses}
             dataSource={mesesTableData}
             pagination={false}
-            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
+            scroll={{ y: 600, x: 'max-content' }}
           />
         </div>
       </div>
-  
+
       {/* Gráfico de Barras */}
       <div style={styles.chartWrapper}>
         <h3 style={styles.sectionTitle}>Gráfico de Forecast Mensual vs Acumulado</h3>
