@@ -62,74 +62,145 @@ const InformeProyecto = () => {
     }, [id]);
   
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          autoFocus
-          placeholder={`Buscar ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => confirm()}
-          style={{ width: 188, marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => confirm()}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Buscar
-          </Button>
-          <Button
-            onClick={() => clearFilters && clearFilters()}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Resetear
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
-    render: (text) => text || "No disponible",
-  });
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            autoFocus
+            placeholder={`Buscar ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => confirm()}
+            style={{ width: 188, marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Buscar
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Resetear
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      onFilter: (value, record) => {
+        // Si el valor es un objeto, usamos la propiedad faseVenta
+        if (typeof record[dataIndex] === 'object') {
+          return record[dataIndex]?.faseVenta?.toLowerCase().includes(value.toLowerCase());
+        }
+        // Si es un string, hacemos la comparación directamente
+        return record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase());
+      },
+      render: (text) => text || "No disponible",
+    });
+    
+    const getColumnSearchProps2 = (dataIndex) => ({
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            autoFocus
+            placeholder={`Buscar ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => confirm()}
+            style={{ width: 188, marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Buscar
+            </Button>
+            <Button
+              onClick={() => clearFilters && clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Resetear
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />,
+      onFilter: (value, record) => {
+        const lapsoTexto = `${record.cantidadLapso} ${record.unidadLapso}`.toLowerCase();
+        return lapsoTexto.includes(value.toLowerCase()); // Filtra correctamente por texto
+      },
+    });
+      
+    
 
   const columnas = [
     {
       title: "Fecha Actualización",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (fecha) => fecha ? new Date(fecha).toLocaleDateString("es-ES") : "No disponible",
-    },
+      ...getColumnSearchProps("createdAt"),
+      render: (fecha) =>
+        fecha
+          ? new Date(fecha).toLocaleString("es-ES", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false, // 24 horas, opcional
+            })
+          : "No disponible",
+    },    
+    
     {
       title: "Fecha Inicio",
       dataIndex: "fechaInicio",
       key: "fechaInicio",
-      render: (fecha) => {
-        if (fecha) {
-          // Usar toLocaleDateString para mostrar solo mes y año
-          return new Date(fecha).toLocaleDateString("es-ES", {
-            year: "numeric",
-            month: "long" // Solo muestra el mes y el año
-          });
-        }
-        return "No disponible";
-      },
-    },
-
+      //...getColumnSearchProps("fechaInicio","fechaInicio"),
+      render: (text) => {
+        const [year, month] = text.split("T")[0].split("-");
+        const meses = [
+          "enero", "febrero", "marzo", "abril", "mayo", "junio",
+          "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+        const nombreMes = meses[parseInt(month, 10) - 1];
+        return `${nombreMes} ${year}`;
+      }
+      
+    },    
     {
       title: "Fase de Venta",
       dataIndex: "faseVenta",
       key: "faseVenta",
-      render: (faseVenta) => faseVenta?.faseVenta || "No disponible",
-    },
+      ...getColumnSearchProps("faseVenta"), // Solo pasas el nombre del campo
+      render: (faseVenta) => {
+        // Si faseVenta es un objeto que tiene una propiedad `faseVenta` dentro de él
+        if (faseVenta && typeof faseVenta === 'object') {
+          return faseVenta.faseVenta || "No disponible";
+        }
+        // Si faseVenta es un string directamente
+        return faseVenta || "No disponible";
+      }
+    },    
     {
       title: "Monto Estimado",
       dataIndex: "montoEstimado",

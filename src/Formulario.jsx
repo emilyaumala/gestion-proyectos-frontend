@@ -14,6 +14,7 @@ function Formulario() {
     const [faseVentaError, setFaseVentaError] = useState("");
     const [respComercialError, setRespComercialError] = useState("");
     const [respTecnicoError, setRespTecnicoError] = useState("");
+    const [proyectosExistentes, setProyectosExistentes] = useState([]);
 
     const [clientes, setClientes] = useState([]);
     const [areas, setAreas] = useState([]);
@@ -25,42 +26,51 @@ function Formulario() {
     const navigate = useNavigate(); // Inicializa navigate
 
     useEffect(() => {
-
-        const handlePopState = (event) => {
-            navigate("/");  // Redirigir al Home cuando el usuario presiona la flecha de retroceso
-          };
-        window.addEventListener("popstate", handlePopState);
         const fetchData = async () => {
             try {
-                const [clientesRes, areasRes, fasesVentaRes, probVentaRes, respComercialRes, respTecnicoRes] = await Promise.all([
+                const [
+                    clientesRes, areasRes, fasesVentaRes, probVentaRes,
+                    respComercialRes, respTecnicoRes, proyectosRes
+                ] = await Promise.all([
                     axios.get(`${API_URL}/clientes`),
                     axios.get(`${API_URL}/areas`),
                     axios.get(`${API_URL}/fasesVenta`),
                     axios.get(`${API_URL}/probabilidad-venta`),
                     axios.get(`${API_URL}/responsables-comerciales`),
-                    axios.get(`${API_URL}/responsables-tecnicos`)
+                    axios.get(`${API_URL}/responsables-tecnicos`),
+                    axios.get(`${API_URL}/proyectos`)
                 ]);
 
-                    setClientes(clientesRes.data);
-                    setAreas(areasRes.data);
-                    setFasesVenta(fasesVentaRes.data);
-                    setProbabilidades(probVentaRes.data);
-                    setResponsablesComerciales(respComercialRes.data);
-                    setResponsablesTecnicos(respTecnicoRes.data);
-                } catch (error) {
-                    console.error("❌ Error al obtener datos:", error);
-                    setError("Hubo un problema al cargar los datos.");
-                }
-            };
-
-            fetchData();
-        }, []);
-
-        const onSubmit = async (data) => {
-            if (clienteError || areaError || faseVentaError || respComercialError || respTecnicoError) {
-                alert("Corrige los errores antes de enviar el formulario.");
-                return;
+                setClientes(clientesRes.data);
+                setAreas(areasRes.data);
+                setFasesVenta(fasesVentaRes.data);
+                setProbabilidades(probVentaRes.data);
+                setResponsablesComerciales(respComercialRes.data);
+                setResponsablesTecnicos(respTecnicoRes.data);
+                setProyectosExistentes(proyectosRes.data);  
+            } catch (error) {
+                console.error("❌ Error al obtener datos:", error);
+                setError("Hubo un problema al cargar los datos.");
             }
+        };
+
+        fetchData();
+    }, []);
+
+    const onSubmit = async (data) => {
+        if (clienteError || areaError || faseVentaError || respComercialError || respTecnicoError) {
+            alert("Corrige los errores antes de enviar el formulario.");
+            return;
+        }
+
+        const codigoExiste = proyectosExistentes.some(
+            (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
+        );
+
+        if (codigoExiste) {
+            alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
+            return;
+        }
 
         const formattedData = {
             cliente: data.cliente,
@@ -76,32 +86,29 @@ function Formulario() {
             observaciones: data.observaciones || "Sin observaciones",
             cantidadLapso: data.cantidadLapso,
             unidadLapso: data.unidadLapso
-
         };
 
         try {
             const response = await axios.post(`${API_URL}/guardar`, formattedData);
             console.log("✅ Respuesta del backend:", response.data);
             alert("Proyecto guardado exitosamente");
-
-            // Redirige a la página /formulario después de guardar el proyecto
             navigate("/formulario");
 
-                reset();
-                setError(null);
-                setClienteError("");
-                setAreaError("");
-                setFaseVentaError("");
-                setRespComercialError("");
-                setRespTecnicoError("");
-            } catch (error) {
-                console.error("❌ Error al guardar el proyecto:", error);
-                setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
-            }
-        };
+            reset();
+            setError(null);
+            setClienteError("");
+            setAreaError("");
+            setFaseVentaError("");
+            setRespComercialError("");
+            setRespTecnicoError("");
+        } catch (error) {
+            console.error("❌ Error al guardar el proyecto:", error);
+            setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
+        }
+    };
 
-        const handleClienteChange = (event1, value) => {
-            const clienteExiste = clientes.some(cliente => cliente.cliente.toLowerCase() === (value?.toLowerCase() || ""));
+    const handleClienteChange = (event1, value) => {
+        const clienteExiste = clientes.some(cliente => cliente.cliente.toLowerCase() === (value?.toLowerCase() || ""));
 
         if (value && !clienteExiste) {
             setClienteError(`El cliente '${value}' no existe, pídele al administrador que lo agregue.`);
@@ -160,7 +167,7 @@ function Formulario() {
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "auto", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
-                    <Typography variant="h4" fontWeight="bold" color= "#333333" sx={{ mb: 2, textAlign: "center"}}>Agregar Oportunidad</Typography>
+                    <Typography variant="h4" fontWeight="bold" color="#333333" sx={{ mb: 2, textAlign: "center" }}>Agregar Oportunidad</Typography>
 
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                     {clienteError && <Alert severity="error" sx={{ mb: 2 }}>{clienteError}</Alert>}
@@ -356,14 +363,14 @@ function Formulario() {
                     {/* Observaciones */}
                     <TextField fullWidth multiline rows={3} label="Observaciones" {...register("observaciones")} margin="normal" />
 
-                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-                            Guardar Proyecto
-                        </Button>
-                    </Box>
-                </Container>
-            </Box>
-        );
-    }
+                    <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                        Guardar Oportunidad
+                    </Button>
+                </Box>
+            </Container>
+        </Box>
+    );
+}
 
 export default Formulario;
 

@@ -111,7 +111,17 @@ const Proyeccion = () => {
       title: "Fecha Inicio",
       dataIndex: "fechaInicio",
       key: "fechaInicio",
+      render: (text) => {
+        const [year, month] = text.split("T")[0].split("-");
+        const meses = [
+          "enero", "febrero", "marzo", "abril", "mayo", "junio",
+          "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+        const nombreMes = meses[parseInt(month, 10) - 1];
+        return `${nombreMes} ${year}`;
+      }
     },
+
     {
       title: "Monto Estimado",
       dataIndex: "montoEstimado",
@@ -202,7 +212,7 @@ const Proyeccion = () => {
       alignItems: "center",       // Centra todo el contenido horizontalmente
       justifyContent: "flex-start",
       minHeight: "100vh",
-      width: "100%",
+      width: "auto",
       backgroundColor: "#f4f4f4",
       padding: "5vw",            // Uso de unidades relativas
       boxSizing: "border-box",
@@ -233,7 +243,8 @@ const Proyeccion = () => {
     scrollWrapper: {
       width: "100%",
       overflowX: "auto",    // Habilita scroll horizontal
-      overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
+      //overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
+      
     },
     chartWrapper: {
       display: "flex",              // Usamos flexbox para centrar el gráfico
