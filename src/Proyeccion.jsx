@@ -104,13 +104,23 @@ const Proyeccion = () => {
     },
     {
       title: "Cliente",
-      dataIndex:  "cliente",
+      dataIndex: "cliente",
       key: "cliente",
     },
     {
       title: "Fecha Inicio",
       dataIndex: "fechaInicio",
       key: "fechaInicio",
+      // render: (fecha) => {
+      //   if (fecha) {
+      //     // Usar toLocaleDateString para mostrar solo mes y año
+      //     return new Date(fecha).toLocaleDateString("es-ES", {
+      //       year: "numeric",
+      //       month: "long" // Solo muestra el mes y el año
+      //     });
+      //   }
+      //   return "No disponible";
+      // },
     },
     {
       title: "Monto Estimado",
@@ -159,7 +169,7 @@ const Proyeccion = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>📈 Proyección de Proyectos</h1>
-  
+
       {/* Tabla de Proyectos */}
       <div style={styles.responsiveBox}>
         <h3 style={styles.sectionTitle}>Pronóstico por Proyecto</h3>
@@ -167,12 +177,14 @@ const Proyeccion = () => {
           <Table
             columns={columnsProyecto}
             dataSource={proyectos}
-            pagination={false}
-            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
+            pagination={{ pageSize: 5 }}
+            bordered
+            style={{ minWidth: "600px" }}
+          // Ajuste para scroll horizontal
           />
         </div>
       </div>
-  
+
       {/* Tabla de Forecast Mensual y Acumulado */}
       <div style={styles.responsiveBox}>
         <h3 style={styles.sectionTitle}>Pronóstico Mensual y Acumulado</h3>
@@ -181,11 +193,11 @@ const Proyeccion = () => {
             columns={columnsMeses}
             dataSource={mesesTableData}
             pagination={false}
-            scroll={{ y: 300, x: 'max-content' }}  // Ajuste para scroll horizontal
+            scroll={{ y: 600, x: 'max-content' }}
           />
         </div>
       </div>
-  
+
       {/* Gráfico de Barras */}
       <div style={styles.chartWrapper}>
         <h3 style={styles.sectionTitle}>Gráfico de Forecast Mensual vs Acumulado</h3>
@@ -194,57 +206,58 @@ const Proyeccion = () => {
     </div>
   );
 };
-  
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",       // Centra todo el contenido horizontalmente
-      justifyContent: "flex-start",
-      minHeight: "100vh",
-      width: "100%",
-      backgroundColor: "#f4f4f4",
-      padding: "5vw",            // Uso de unidades relativas
-      boxSizing: "border-box",
-    },
-    title: {
-      fontSize: "3vw",           // Uso de unidades relativas
-      fontWeight: "bold",
-      color: "#333",
-      marginBottom: "2vw",       // Margen relativo
-      textAlign: "center",       // Centra el título principal
-    },
-    responsiveBox: {
-      width: "100%",
-      maxWidth: "95%",           // Se ajusta al 95% del ancho de la pantalla
-      marginBottom: "3vw",       // Margen relativo
-      backgroundColor: "#fff",
-      padding: "4vw",            // Uso de unidades relativas
-      borderRadius: "1vw",       // Bordes redondeados con tamaño relativo
-      boxShadow: "0 0.5vw 1vw rgba(0, 0, 0, 0.1)",  // Sombra con tamaños relativos
-      boxSizing: "border-box",
-    },
-    sectionTitle: {
-      color: "#333333",
-      marginBottom: "1vw",       // Margen relativo
-      fontSize: "2vw",           // Fuente con tamaño relativo
-      textAlign: "center",       // Centra todos los títulos de las secciones
-    },
-    scrollWrapper: {
-      width: "100%",
-      overflowX: "auto",    // Habilita scroll horizontal
-      overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
-    },
-    chartWrapper: {
-      display: "flex",              // Usamos flexbox para centrar el gráfico
-      flexDirection: "column",
-      alignItems: "center",         // Centra el gráfico horizontalmente
-      justifyContent: "center",     // Centra el gráfico verticalmente
-      width: "100%",
-      minHeight: "30vw",            // Ajuste dinámico para gráficos
-      marginBottom: "3vw",          // Margen relativo
-    },
-  };
-  
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",       // Centra todo el contenido horizontalmente
+    justifyContent: "flex-start",
+    minHeight: "100vh",
+    width: "auto",
+    backgroundColor: "#f4f4f4",
+    padding: "5vw",            // Uso de unidades relativas
+    boxSizing: "border-box",
+  },
+  title: {
+    fontSize: "3vw",           // Uso de unidades relativas
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "2vw",       // Margen relativo
+    textAlign: "center",       // Centra el título principal
+  },
+  responsiveBox: {
+    width: "100%",
+    maxWidth: "95%",           // Se ajusta al 95% del ancho de la pantalla
+    marginBottom: "3vw",       // Margen relativo
+    backgroundColor: "#fff",
+    padding: "4vw",            // Uso de unidades relativas
+    borderRadius: "1vw",       // Bordes redondeados con tamaño relativo
+    boxShadow: "0 0.5vw 1vw rgba(0, 0, 0, 0.1)",  // Sombra con tamaños relativos
+    boxSizing: "border-box",
+  },
+  sectionTitle: {
+    color: "#333333",
+    marginBottom: "1vw",       // Margen relativo
+    fontSize: "2vw",           // Fuente con tamaño relativo
+    textAlign: "center",       // Centra todos los títulos de las secciones
+  },
+  scrollWrapper: {
+    width: "100%",
+    overflowX: "auto",    // Habilita scroll horizontal
+    overflowY: "auto",
+    minwidth: "600px"    // Scroll solo si la tabla es más ancha que el contenedor
+  },
+  chartWrapper: {
+    display: "flex",              // Usamos flexbox para centrar el gráfico
+    flexDirection: "column",
+    alignItems: "center",         // Centra el gráfico horizontalmente
+    justifyContent: "center",     // Centra el gráfico verticalmente
+    width: "100%",
+    minHeight: "30vw",            // Ajuste dinámico para gráficos
+    marginBottom: "3vw",          // Margen relativo
+  },
+};
+
 
 export default Proyeccion;
