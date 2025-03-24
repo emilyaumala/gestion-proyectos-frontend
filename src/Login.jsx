@@ -10,10 +10,10 @@ function Login({ onLogin }) {
 
         const usuarios = ["mario.baquero@constecoin.com", "victor.boccalon@constecoin.com", "dayana.herrera@constecoin.com",
             "cristian.manzano@constecoin.com", "juan.moran@constecoin.com", "pablo.pillajo@constecoin.com", "pedro.tulcan@constecoin.com",
-            "ricardo.venegas@constecoin.com", "diana.zurita@constecoin.com"]
+            "ricardo.venegas@constecoin.com", "diana.zurita@constecoin.com", "admin"]
 
         const contrasenia = ["mario.baquero", "victor.boccalon", "dayana.herrera", "cristian.manzano", "juan.moran",
-            "pablo.pillajo", "pedro.tulcan", "ricardo.venegas", "diana.zurita"]
+            "pablo.pillajo", "pedro.tulcan", "ricardo.venegas", "diana.zurita", "1234"]
 
         for (let i = 0; i < usuarios.length; i++) {
             console.log(username)
