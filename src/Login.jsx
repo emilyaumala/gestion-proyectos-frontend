@@ -6,27 +6,44 @@ function Login({ onLogin }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const validUsername = "admin";
-        const validPassword = "1234";
+        let loginSuccess = false;
 
-        if (username === validUsername && password === validPassword) {
-            onLogin();
-        } else {
-            alert("Usuario o contraseña incorrectos.");
+        const usuarios = ["mario.baquero@constecoin.com", "victor.boccalon@constecoin.com", "dayana.herrera@constecoin.com",
+            "cristian.manzano@constecoin.com", "juan.moran@constecoin.com", "pablo.pillajo@constecoin.com", "pedro.tulcan@constecoin.com",
+            "ricardo.venegas@constecoin.com", "diana.zurita@constecoin.com", "admin"]
+
+        const contrasenia = ["mario.baquero", "victor.boccalon", "dayana.herrera", "cristian.manzano", "juan.moran",
+            "pablo.pillajo", "pedro.tulcan", "ricardo.venegas", "diana.zurita", "1234"]
+
+        for (let i = 0; i < usuarios.length; i++) {
+            console.log(username)
+            console.log(password)
+            console.log(usuarios[i])
+            console.log(contrasenia[i])
+            if (username === usuarios[i] && password === contrasenia[i]) {
+                loginSuccess = true;
+                onLogin(); // Llamas a tu función de inicio de sesión si las credenciales son correctas
+                break;
+            }
         }
+
+        if (!loginSuccess) {
+            alert("Credenciales incorrectas"); // Si no encontramos ninguna coincidencia
+        }
+
     };
 
     return (
         <div style={styles.container}>
             <div style={styles.loginBox}>
                 {/* Logo de la empresa */}
-                <img 
-                    src="/logo.png" 
-                    alt="Logo de la empresa" 
-                    style={styles.logo} 
+                <img
+                    src="/logo.png"
+                    alt="Logo de la empresa"
+                    style={styles.logo}
                 />
                 <h2 style={styles.title}>Constecoin</h2>
-                <h3 style={styles.subtitle}>Gestión de Proyectos</h3>
+                <h3 style={styles.subtitle}>Gestión de Oportunidades</h3>
 
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <input
@@ -85,12 +102,12 @@ const styles = {
         marginBottom: "20px",
     },
     input: {
-        width: "100%",
+        width: "90%",
         padding: "10px",
         margin: "10px 0",
-        borderRadius: "5px",
+        borderRadius: "50px",
         border: "1px solid #ccc",
-        fontSize: "16px",
+        fontSize: "16px"
     },
     button: {
         padding: "10px",
@@ -100,7 +117,8 @@ const styles = {
         border: "none",
         borderRadius: "5px",
         cursor: "pointer",
-        width: "100%",
+        width: "40%",
+        margin: "10px 0"
     },
 };
 
