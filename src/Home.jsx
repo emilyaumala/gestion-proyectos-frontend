@@ -13,11 +13,12 @@ function Home({ onLogout }) {
           <button style={styles.button} onClick={() => navigate("/formulario")}>
             📋 Agregar Oportunidad
           </button>
-          <button style={styles.button} onClick={() => navigate("/proyectos")}>
-            📊 Ver Oportunidades
-          </button>
+
           <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
             📋 Actualizar Oportunidad
+          </button>
+          <button style={styles.button} onClick={() => navigate("/proyectos")}>
+            📊 Ver Oportunidades
           </button>
         </div>
 
@@ -78,6 +79,7 @@ const styles = {
     gap: "15px",
     justifyContent: "center",
     width: "100%",
+    
   },
   button: {
     padding: "14px 20px",

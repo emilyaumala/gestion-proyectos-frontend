@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import Home from "./Home";
 import Formulario from "./Formulario";
-import Proyectos from "./Proyectos"; // Asegúrate de importar el componente Proyecto
-import Oportunidades from "./Oportunidades"; // Asegúrate de importar el componente Proyectos
+import Proyectos from "./Proyectos";
+import Oportunidades from "./Oportunidades";
 import InformeProyecto from "./InformeProyecto";
 import Proyeccion from "./Proyeccion";
-import CambioPwd from "./CambioPwd"
+import CambioPwd from "./CambioPwd";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -19,7 +19,7 @@ function App() {
         if (isLoggedIn) {
             localStorage.setItem("isLoggedIn", "true");
 
-            // Configurar temporizaaaaaador de inactividad
+            // Configurar temporizador de inactividad
             let logoutTimer = setTimeout(handleLogout, 600000); // 10 minutos
 
             // Reiniciar el temporizador en actividad del usuario
@@ -59,18 +59,28 @@ function App() {
     }
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
-                <Route path="/proyectos" element={<Proyectos />} />
-                <Route path="/formulario" element={<Formulario />} />
-                <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
-                <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
-                <Route path="/forecast" element={<Proyeccion />} />
-                <Route path="/cambio-contrasenia" element={<CambioPwd />} />
-            </Routes>
-        </Router>
+        <div style={styles.globalStyles}>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
+                    <Route path="/proyectos" element={<Proyectos />} />
+                    <Route path="/formulario" element={<Formulario />} />
+                    <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
+                    <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
+                    <Route path="/forecast" element={<Proyeccion />} />
+                    <Route path="/cambio-contrasenia" element={<CambioPwd />} />
+                </Routes>
+            </Router>
+        </div>
     );
 }
+
+const styles = {
+    globalStyles: {
+        colorScheme: "light",    // Forzar modo claro
+        backgroundColor: "#f4f4f4",  // Fondo claro
+        color: "#333",               // Texto oscuro
+    },
+};
 
 export default App;

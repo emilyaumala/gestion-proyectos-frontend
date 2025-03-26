@@ -9,7 +9,7 @@ const Proyectos = () => {
 
   useEffect(() => {
     axios
-      .get("https://gestion-proyectos-backend-qzye.onrender.com/proyectos")
+      .get("https://crm.constecoin.com/apicrm/proyectos")
       .then((response) => {
         setProyectos(response.data);
         setFilteredData(response.data);
@@ -137,13 +137,13 @@ const Proyectos = () => {
       render: (area) => area ? area.area : "No disponible",  // Renderiza "No disponible" si es null
     },
     {
-      title: "Proyecto",
+      title: "Oportunidad",
       dataIndex: "nombreProyecto",
       key: "nombreProyecto",
       ...getColumnSearchProps("nombreProyecto"),
       render: (text) => text || "No disponible",  // Renderiza "No disponible" si es null
     },
-    {
+    /*{
       title: "Monto Estimado",
       dataIndex: "montoEstimado",
       key: "montoEstimado",
@@ -189,7 +189,7 @@ const Proyectos = () => {
           return lapsoTexto;
         },
         ...getColumnSearchProps2("lapsoEjecucion") // Utiliza el filtro aquí
-      },      
+      },  */    
       
     {
       title: "Responsable Comercial",
@@ -205,13 +205,13 @@ const Proyectos = () => {
       ...getColumnSearchProps("respTecnico", "respTecnico"), // Acceder a la propiedad respTecnico dentro del objeto respTecnico
       render: (respTecnico) => respTecnico ? respTecnico.respTecnico : "No disponible",  // Muestra "No disponible" si es null
     },
-    {
+   /* {
       title: "Observaciones",
       dataIndex: "observaciones",
       key: "observaciones",
       ...getColumnSearchProps("observaciones"),
       render: (text) => text || "No disponible",  // Si no hay observaciones, muestra "No disponible"
-    },
+    },*/
     {
   title: "Acciones",
   key: "acciones",
@@ -241,20 +241,59 @@ const Proyectos = () => {
   const handleReset = () => {
     setFilteredData(proyectos);
   };
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Lista de Proyectos</h2>
-      <Table
-        columns={columnas}
-        dataSource={filteredData}
-        rowKey="_id"
-        onChange={(pagination, filters, sorter) => {
-          // Logic to handle sorting or other changes in table
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        backgroundColor: "#f4f4f4",
+        padding: "4vw", // Espaciado responsive
+        boxSizing: "border-box",
+        margin: 0,
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "1200px",
+          backgroundColor: "#ffffff",
+          padding: "clamp(16px, 4vw, 32px)", // Escala según pantalla
+          borderRadius: "12px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          overflow: "hidden", // Previene scroll innecesario en el div principal
         }}
-      />
+      >
+        <h2 style={{
+          textAlign: "center",
+          color: "#333333",
+          fontSize: "clamp(20px, 4vw, 28px)", // Escala en móvil/desktop
+          marginBottom: "1rem",
+        }}>
+          Lista de Oportunidades
+        </h2>
+  
+        {/* Tabla con scroll horizontal si es necesario */}
+        <div style={{ width: "100%", overflowX: "auto" }}>
+          <Table
+            columns={columnas}
+            dataSource={filteredData}
+            rowKey="_id"
+            pagination={{ pageSize: 10 }}
+            onChange={(pagination, filters, sorter) => {
+              // lógica para ordenar
+            }}
+            style={{ minWidth: "600px" }} // Asegura legibilidad en pantallas chicas con scroll lateral
+          />
+        </div>
+      </div>
     </div>
   );
+  
 };
-
 export default Proyectos;

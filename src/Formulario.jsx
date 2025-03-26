@@ -4,7 +4,7 @@ import { TextField, Button, MenuItem, Container, Typography, Box, Alert, Autocom
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
-const API_URL = "https://gestion-proyectos-backend-qzye.onrender.com";
+const API_URL = "https://crm.constecoin.com/apicrm/";
 
 function Formulario() {
     const { register, handleSubmit, reset, setValue, watch } = useForm();
@@ -14,6 +14,7 @@ function Formulario() {
     const [faseVentaError, setFaseVentaError] = useState("");
     const [respComercialError, setRespComercialError] = useState("");
     const [respTecnicoError, setRespTecnicoError] = useState("");
+    const [proyectosExistentes, setProyectosExistentes] = useState([]);
 
     const [clientes, setClientes] = useState([]);
     const [areas, setAreas] = useState([]);
@@ -25,16 +26,19 @@ function Formulario() {
     const navigate = useNavigate(); // Inicializa navigate
 
     useEffect(() => {
-
         const fetchData = async () => {
             try {
-                const [clientesRes, areasRes, fasesVentaRes, probVentaRes, respComercialRes, respTecnicoRes] = await Promise.all([
+                const [
+                    clientesRes, areasRes, fasesVentaRes, probVentaRes,
+                    respComercialRes, respTecnicoRes, proyectosRes
+                ] = await Promise.all([
                     axios.get(`${API_URL}/clientes`),
                     axios.get(`${API_URL}/areas`),
                     axios.get(`${API_URL}/fasesVenta`),
                     axios.get(`${API_URL}/probabilidad-venta`),
                     axios.get(`${API_URL}/responsables-comerciales`),
-                    axios.get(`${API_URL}/responsables-tecnicos`)
+                    axios.get(`${API_URL}/responsables-tecnicos`),
+                    axios.get(`${API_URL}/proyectos`)
                 ]);
 
                 setClientes(clientesRes.data);
@@ -43,6 +47,7 @@ function Formulario() {
                 setProbabilidades(probVentaRes.data);
                 setResponsablesComerciales(respComercialRes.data);
                 setResponsablesTecnicos(respTecnicoRes.data);
+                setProyectosExistentes(proyectosRes.data);  
             } catch (error) {
                 console.error("❌ Error al obtener datos:", error);
                 setError("Hubo un problema al cargar los datos.");
@@ -58,9 +63,19 @@ function Formulario() {
             return;
         }
 
+      //  const codigoExiste = proyectosExistentes.some(
+      //      (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
+     //   );
+
+      //  if (codigoExiste) {
+       //     alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
+      //      return;
+     //   }
+
         const formattedData = {
             cliente: data.cliente,
             nombreProyecto: data.nombreProyecto,
+            codigoProyecto: data.codigoProyecto,
             area: data.area,
             montoEstimado: parseFloat(data.montoEstimado) || 0,
             faseVenta: data.faseVenta,
@@ -70,15 +85,13 @@ function Formulario() {
             respTecnico: data.respTecnico,
             observaciones: data.observaciones || "Sin observaciones",
             cantidadLapso: data.cantidadLapso,
-            unidadLapso: data.unidadLapso,
+            unidadLapso: data.unidadLapso
         };
 
         try {
             const response = await axios.post(`${API_URL}/guardar`, formattedData);
             console.log("✅ Respuesta del backend:", response.data);
             alert("Proyecto guardado exitosamente");
-
-            // Redirige a la página /formulario después de guardar el proyecto
             navigate("/formulario");
 
             reset();
@@ -153,8 +166,8 @@ function Formulario() {
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
-                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "100%", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
-                    <Typography variant="h4" fontWeight="bold" sx={{ mb: 2, textAlign: "center" }}>Agregar Oportunidad</Typography>
+                <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: "auto", maxWidth: "600px", backgroundColor: "white", padding: "30px", borderRadius: "10px", boxShadow: 3, margin: "0 auto" }}>
+                    <Typography variant="h4" fontWeight="bold" color="#333333" sx={{ mb: 2, textAlign: "center" }}>Agregar Oportunidad</Typography>
 
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                     {clienteError && <Alert severity="error" sx={{ mb: 2 }}>{clienteError}</Alert>}
@@ -208,6 +221,8 @@ function Formulario() {
 
                     {/* Nombre del Proyecto */}
                     <TextField fullWidth label="Nombre del Proyecto" {...register("nombreProyecto", { required: true })} margin="normal" />
+                    {/* Código Oportunidad */}  
+                    <TextField fullWidth label="Código de Oportunidad AS2 (Opocional)" {...register("codigoProyecto")} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
                     {/* Fase de Venta */}
                     {faseVentaError && <Alert severity="error" sx={{ mb: 2 }}>{faseVentaError}</Alert>}
                     <Autocomplete
@@ -256,7 +271,7 @@ function Formulario() {
                     {/* Fecha de Inicio */}
                     <TextField
                         fullWidth
-                        label="Fecha de Inicio"
+                        label="Fecha Probable de Cierre"
                         type="month"
                         {...register("fechaInicio", { required: true })}
                         margin="normal"
@@ -264,31 +279,29 @@ function Formulario() {
                     />
 
 
-                    {/* Lapso de Ejecución */}
+                    {/* Lapso de Ejecución 
                     <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) */}
+                        {/* Cuadro para ingresar el valor numérico (ej. 1, 12, 365) 
                         <TextField
                             fullWidth
                             label="Lapso de Ejecución (Cantidad)"
                             type="number"
-                            {...register("cantidadLapso", { required: true, min: 1 })}
+                            {...register("cantidadLapso", { required: false, min: 1 })}
                             margin="normal"
                         />
-                        {/* Selector de Unidad de Tiempo (Días, Meses, Años) */}
+                        {/* Selector de Unidad de Tiempo (Días, Meses, Años)
                         <TextField
                             select
                             label="Unidad de Tiempo"
                             fullWidth
-                            {...register("unidadLapso", { required: true })}
+                            {...register("unidadLapso", { required: false })}
                             margin="normal"
                         >
                             <MenuItem value="días">Día(s)</MenuItem>
                             <MenuItem value="meses">Mes(es)</MenuItem>
                             <MenuItem value="años">Año(s)</MenuItem>
                         </TextField>
-                    </div>
-
-
+                    </div>*/}
 
                     {/* Responsable Comercial */}
                     {/* <TextField select fullWidth label="Responsable Comercial" {...register("respComercial", { required: true })} margin="normal">
@@ -348,10 +361,10 @@ function Formulario() {
                     />
 
                     {/* Observaciones */}
-                    <TextField fullWidth multiline rows={3} label="Observaciones" {...register("observaciones")} margin="normal" />
+                    <TextField fullWidth multiline rows={3} label="Descripción de Oportunidad" {...register("observaciones")} margin="normal" />
 
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-                        Guardar Proyecto
+                        Guardar Oportunidad
                     </Button>
                 </Box>
             </Container>
