@@ -25,8 +25,11 @@ function Oportunidades() {
     const [fechaInicio, setFechaInicio] = useState("");
     const [respComercial, setRespComercial] = useState(null);
     const [respTecnico, setRespTecnico] = useState(null);
-    const [cantidadLapso, setCantidadLapso] = useState("");
-    const [unidadLapso, setUnidadLapso] = useState("");
+    //const [cantidadLapso, setCantidadLapso] = useState("");
+    //const [unidadLapso, setUnidadLapso] = useState("");
+    const [nombreContacto, setNombreContacto] = useState("");
+    const [numeroContacto, setCelularContacto] = useState("");
+    const [correoContacto, setCorreoContacto] = useState("");
     const [probabilidadVenta, setProbabilidadVenta] = useState(null);
 
     // Datos para Autocomplete
@@ -111,8 +114,8 @@ function Oportunidades() {
                 setFechaInicio(formatDateToMonthYear(data.fechaInicio)); // Formatear y asignar la fecha
                 setRespComercial(data.respComercial);
                 setRespTecnico(data.respTecnico);
-                setCantidadLapso(data.cantidadLapso);
-                setUnidadLapso(data.unidadLapso);
+                //setCantidadLapso(data.cantidadLapso);
+                //setUnidadLapso(data.unidadLapso);
                 setProbabilidadVenta(data.probabilidadVenta);
 
             } catch (error) {
@@ -139,6 +142,9 @@ function Oportunidades() {
             cantidadLapso,
             unidadLapso,
             probabilidadVenta,
+            //nombreContacto: data.nombreContacto || "No hay nombre del contacto",
+            //correoContacto: data.correoContacto || "No hay correo del contacto",
+            //celularContacto: data.celularContacto || "No hay celular del contacto",
             observaciones: observaciones || "Sin observaciones" // 👈 ahora sí mandas observaciones
         };
 

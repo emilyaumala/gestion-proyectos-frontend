@@ -14,6 +14,7 @@ function Formulario() {
     const [faseVentaError, setFaseVentaError] = useState("");
     const [respComercialError, setRespComercialError] = useState("");
     const [respTecnicoError, setRespTecnicoError] = useState("");
+    const [responsableError, setResponsableError] = useState("");
     const [proyectosExistentes, setProyectosExistentes] = useState([]);
 
     const [clientes, setClientes] = useState([]);
@@ -22,6 +23,7 @@ function Formulario() {
     const [probabilidades, setProbabilidades] = useState([]);
     const [responsablesComerciales, setResponsablesComerciales] = useState([]);
     const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
+    const [responsables, setResponsables] = useState([]);
 
     const navigate = useNavigate(); // Inicializa navigate
 
@@ -30,14 +32,15 @@ function Formulario() {
             try {
                 const [
                     clientesRes, areasRes, fasesVentaRes, probVentaRes,
-                    respComercialRes, respTecnicoRes, proyectosRes
+                   /* respComercialRes, respTecnicoRes,*/responsablesRes, proyectosRes
                 ] = await Promise.all([
                     axios.get(`${API_URL}/clientes`),
                     axios.get(`${API_URL}/areas`),
                     axios.get(`${API_URL}/fasesVenta`),
                     axios.get(`${API_URL}/probabilidad-venta`),
-                    axios.get(`${API_URL}/responsables-comerciales`),
-                    axios.get(`${API_URL}/responsables-tecnicos`),
+                    axios.get(`${API_URL}/responsables`),
+                    //axios.get(`${API_URL}/responsables-comerciales`),
+                    //axios.get(`${API_URL}/responsables-tecnicos`),
                     axios.get(`${API_URL}/proyectos`)
                 ]);
 
@@ -45,8 +48,9 @@ function Formulario() {
                 setAreas(areasRes.data);
                 setFasesVenta(fasesVentaRes.data);
                 setProbabilidades(probVentaRes.data);
-                setResponsablesComerciales(respComercialRes.data);
-                setResponsablesTecnicos(respTecnicoRes.data);
+                setResponsables(responsablesRes.data);
+                //setResponsablesComerciales(respComercialRes.data);
+                //setResponsablesTecnicos(respTecnicoRes.data);
                 setProyectosExistentes(proyectosRes.data);  
             } catch (error) {
                 console.error("❌ Error al obtener datos:", error);
@@ -58,7 +62,7 @@ function Formulario() {
     }, []);
 
     const onSubmit = async (data) => {
-        if (clienteError || areaError || faseVentaError || respComercialError || respTecnicoError) {
+        if (clienteError || areaError || faseVentaError || responsableError /*respComercialError || respTecnicoError*/) {
             alert("Corrige los errores antes de enviar el formulario.");
             return;
         }
@@ -84,8 +88,11 @@ function Formulario() {
             respComercial: data.respComercial,
             respTecnico: data.respTecnico,
             observaciones: data.observaciones || "Sin observaciones",
-            cantidadLapso: data.cantidadLapso,
-            unidadLapso: data.unidadLapso
+            //cantidadLapso: data.cantidadLapso,
+            nombreContacto: data.nombreContacto || "No hay nombre del contacto",
+            correoContacto: data.correoContacto || "No hay correo del contacto",
+            numeroContacto: data.numeroContacto || "No hay celular del contacto",
+            //unidadLapso: data.unidadLapso
         };
 
         try {
@@ -170,6 +177,7 @@ function Formulario() {
                     <Typography variant="h4" fontWeight="bold" color="#333333" sx={{ mb: 2, textAlign: "center" }}>Agregar Oportunidad</Typography>
 
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                    <Typography fontWeight="bold">Datos del cliente :</Typography>
                     {clienteError && <Alert severity="error" sx={{ mb: 2 }}>{clienteError}</Alert>}
                     <Autocomplete
                         freeSolo
@@ -193,6 +201,15 @@ function Formulario() {
                             }
                         }}
                     />
+                    {/* Nombre del Contacto */}
+                    <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
+                    {/* Nombre del Contacto */}
+                    <TextField fullWidth label="Correo Electrónico del Contacto" {...register("nombreContacto", { required: false })} margin="normal" />
+                    {/* Número del Contacto */}
+                    <TextField fullWidth label="Número del Contacto" type="number" {...register("numeroContacto", { required: false })} margin="normal" /> 
+                    <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
+
+
                     {/* Area */}
                     {areaError && <Alert severity="error" sx={{ mb: 2 }}>{areaError}</Alert>}
                     <Autocomplete
@@ -225,6 +242,7 @@ function Formulario() {
                     <TextField fullWidth label="Código de Oportunidad AS2 (Opocional)" {...register("codigoProyecto")} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
                     {/* Fase de Venta */}
                     {faseVentaError && <Alert severity="error" sx={{ mb: 2 }}>{faseVentaError}</Alert>}
+                    <Box>
                     <Autocomplete
                         freeSolo
                         options={fasesVenta.map(faseVenta => ({ label: faseVenta.faseVenta, id: faseVenta._id }))}
@@ -247,6 +265,7 @@ function Formulario() {
                             }
                         }}
                     />
+                    </Box>
                     {/* Monto Estimado */}
                     <TextField
                         fullWidth
@@ -311,7 +330,7 @@ function Formulario() {
                     {respComercialError && <Alert severity="error" sx={{ mb: 2 }}>{respComercialError}</Alert>}
                     <Autocomplete
                         freeSolo
-                        options={responsablesComerciales.map(respComercial => ({ label: respComercial.respComercial, id: respComercial._id }))}
+                        options={responsables.map(responsable => ({ label: responsable.nombreCompleto, id: responsable._id }))}
                         onInputChange={(event4, newValue) => setValue("respComercial", newValue)}
                         renderInput={(params) => (
                             <TextField
@@ -339,7 +358,7 @@ function Formulario() {
                     {respTecnicoError && <Alert severity="error" sx={{ mb: 2 }}>{respTecnicoError}</Alert>}
                     <Autocomplete
                         freeSolo
-                        options={responsablesTecnicos.map(respTecnico => ({ label: respTecnico.respTecnico, id: respTecnico._id }))}
+                        options={responsables.map(responsable => ({ label: responsable.nombreCompleto, id: responsable._id }))}
                         onInputChange={(event5, newValue) => setValue("respTecnico", newValue)}
                         renderInput={(params) => (
                             <TextField

@@ -3,6 +3,12 @@ import { useNavigate } from "react-router-dom";
 function Home({ onLogout }) {
   const navigate = useNavigate();
 
+      const useAuth = () => {
+          const user = JSON.parse(localStorage.getItem("user"));
+          return user ? user.rol : null;
+      };
+      
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Bienvenido a Constecoin</h1>
@@ -18,13 +24,16 @@ function Home({ onLogout }) {
             📋 Actualizar Oportunidad
           </button>
           <button style={styles.button} onClick={() => navigate("/proyectos")}>
-            📊 Ver Oportunidades
+            📜 Ver Oportunidades
           </button>
         </div>
 
         <div style={styles.rowButton}>
           <button style={styles.button} onClick={() => navigate("/forecast")}>
             📊 Proyección
+          </button>
+          <button style={styles.button} onClick={() => navigate("/responsable")}>
+           👥 Añadir Responsable
           </button>
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
