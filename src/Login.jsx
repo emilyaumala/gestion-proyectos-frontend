@@ -1,47 +1,42 @@
 import { useState } from "react";
+import axios from "axios";
+
+const API_URL = "https://crm.constecoin.com/apicrm";
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let loginSuccess = false;
+    
+        try {
+            const response = await axios.post(`${API_URL}/login`, {
+                correo: username,
+                password: password
+            });
+            if (response.data && response.data.usuario) {
 
-        const usuarios = ["mario.baquero@constecoin.com", "victor.boccalon@constecoin.com", "dayana.herrera@constecoin.com",
-            "cristian.manzano@constecoin.com", "juan.moran@constecoin.com", "pablo.pillajo@constecoin.com", "pedro.tulcan@constecoin.com",
-            "ricardo.venegas@constecoin.com", "diana.zurita@constecoin.com", "admin"]
-
-        const contrasenia = ["mario.baquero", "victor.boccalon", "dayana.herrera", "cristian.manzano", "juan.moran",
-            "pablo.pillajo", "pedro.tulcan", "ricardo.venegas", "diana.zurita", "1234"]
-
-        for (let i = 0; i < usuarios.length; i++) {
-            console.log(username)
-            console.log(password)
-            console.log(usuarios[i])
-            console.log(contrasenia[i])
-            if (username === usuarios[i] && password === contrasenia[i]) {
-                loginSuccess = true;
-                onLogin(); // Llamas a tu función de inicio de sesión si las credenciales son correctas
-                break;
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("user", JSON.stringify(response.data.usuario)); 
+                console.log(response.data.usuario);
+                console.log(password)
+                onLogin(response.data.usuario);
+            } else {
+                console.error("El objeto 'usuario' no está presente en la respuesta:", response.data);
+                alert("❌ Error al obtener datos de usuario.");
             }
+        } catch (error) {
+            console.error("Error en la solicitud:", error); 
+            alert("❌ Correo o contraseña incorrectos");
         }
-
-        if (!loginSuccess) {
-            alert("Credenciales incorrectas"); // Si no encontramos ninguna coincidencia
-        }
-
     };
+    
 
     return (
         <div style={styles.container}>
             <div style={styles.loginBox}>
-                {/* Logo de la empresa */}
-                <img
-                    src="/logo.png"
-                    alt="Logo de la empresa"
-                    style={styles.logo}
-                />
+                <img src="/logo.png" alt="Logo de la empresa" style={styles.logo} />
                 <h2 style={styles.title}>Constecoin</h2>
                 <h3 style={styles.subtitle}>Gestión de Oportunidades</h3>
 
@@ -85,7 +80,7 @@ const styles = {
         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
         textAlign: "center",
         width: "100%",
-        maxWidth: "400px", // Ajusta el tamaño del formulario
+        maxWidth: "400px",
     },
     logo: {
         width: "100px",
@@ -123,4 +118,3 @@ const styles = {
 };
 
 export default Login;
-

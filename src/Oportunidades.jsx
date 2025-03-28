@@ -1,240 +1,249 @@
 import { useState, useEffect } from "react";
-import { TextField, Button, Container, Typography, Box, Grid, Alert, MenuItem, Autocomplete } from "@mui/material";
+import { TextField, Button, Box, Typography, Alert, MenuItem, Autocomplete } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
 function Oportunidades() {
-    const [proyectos, setProyectos] = useState([]);
-    const [areas, setAreas] = useState([]);
-    const [proyectosFiltrados, setProyectosFiltrados] = useState([]);
-    const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
-    const [areaSeleccionada, setAreaSeleccionada] = useState(null);
-    const [oportunidad, setOportunidad] = useState(null);
-    const [error, setError] = useState(null);
-    const [editable, setEditable] = useState(false);
-    const [buttonText, setButtonText] = useState("Editar");
-    const [observaciones, setObservaciones] = useState("");
+  const [proyectos, setProyectos] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [proyectosFiltrados, setProyectosFiltrados] = useState([]);
+  const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
+  const [areaSeleccionada, setAreaSeleccionada] = useState(null);
+  const [oportunidad, setOportunidad] = useState(null);
+  const [error, setError] = useState(null);
+  const [editable, setEditable] = useState(false);
+  const [buttonText, setButtonText] = useState("Editar");
+  const [observaciones, setObservaciones] = useState("");
 
+  const [faseVenta, setFaseVenta] = useState(null);
+  const [montoEstimado, setMontoEstimado] = useState("");
+  const [codigoProyecto, setCodigoProyecto] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [respComercial, setRespComercial] = useState(null);
+  const [respTecnico, setRespTecnico] = useState(null);
+  const [probabilidadVenta, setProbabilidadVenta] = useState(null);
 
-    // Estados locales editables
-    const [faseVenta, setFaseVenta] = useState(null);
-    const [montoEstimado, setMontoEstimado] = useState("");
-    const [codigoProyecto, setCodigoProyecto] = useState("");
-    const [fechaInicio, setFechaInicio] = useState("");
-    const [respComercial, setRespComercial] = useState(null);
-    const [respTecnico, setRespTecnico] = useState(null);
-    const [cantidadLapso, setCantidadLapso] = useState("");
-    const [unidadLapso, setUnidadLapso] = useState("");
-    const [probabilidadVenta, setProbabilidadVenta] = useState(null);
+  const [fasesVentaList, setFasesVentaList] = useState([]);
+  const [probabilidadesVentaList, setProbabilidadesVentaList] = useState([]);
+  const [responsablesComerciales, setResponsablesComerciales] = useState([]);
+  const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
+  const [responsables, setResponsables] = useState([]);
+  const navigate = useNavigate();
 
-    // Datos para Autocomplete
-    const [fasesVentaList, setFasesVentaList] = useState([]);
-    const [probabilidadesVentaList, setProbabilidadesVentaList] = useState([]);
-    const [responsablesComerciales, setResponsablesComerciales] = useState([]);
-    const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
+  // Obtener usuario y roles de localStorage de manera segura
+  const user = localStorage.getItem("user");
+  let roles = [];
+  let areasUsuario = [];
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const handlePopState = (event) => {
-            navigate("/");
-        };
-        window.addEventListener("popstate", handlePopState);
-    
-        const fetchData = async () => {
-            try {
-                const proyectosRes = await axios.get(`${API_URL}/proyectos`);
-                setProyectos(proyectosRes.data);
-    
-                const areasRes = await axios.get(`${API_URL}/areas`);
-                console.log("Áreas recibidas desde la API:", areasRes.data);
-                setAreas(areasRes.data);  // <<--- AQUÍ SE CARGAN LAS ÁREAS
-    
-                const probabilidadesRes = await axios.get(`${API_URL}/probabilidad-venta`);
-                setProbabilidadesVentaList(probabilidadesRes.data);
-    
-                const [fasesRes, comercialesRes, tecnicosRes] = await Promise.all([
-                    axios.get(`${API_URL}/fasesVenta`),
-                    axios.get(`${API_URL}/responsables-comerciales`),
-                    axios.get(`${API_URL}/responsables-tecnicos`)
-                ]);
-    
-                setFasesVentaList(fasesRes.data);
-                setResponsablesComerciales(comercialesRes.data);
-                setResponsablesTecnicos(tecnicosRes.data);
-    
-            } catch (error) {
-                console.error("❌ Error al obtener datos:", error);
-                setError("Hubo un problema al cargar los datos.");
-            }
-        };
-    
-        fetchData();  // <<--- ESTA LÍNEA FALTABA, LLAMAR A fetchData
-    
-        return () => {
-            window.removeEventListener("popstate", handlePopState);
-        };
-    }, [navigate]);
-    
-    const formatDateToMonthYear = (dateString) => {
-        const [year, month] = dateString.split("T")[0].split("-");
-        return `${year}-${month}`; // Ej: 2025-03
+  if (user) {
+    try {
+      const parsedUser = JSON.parse(user);
+      roles = parsedUser.roles || [];
+      if (roles.includes("jefeArea")) {
+        // Convertimos IDs de areasUsuario en objetos completos
+        areasUsuario = parsedUser.areas.map(areaId =>
+          areas.find(area => area._id === areaId) || { _id: areaId, area: "Área desconocida" }
+        );
+      }
+    } catch (error) {
+      console.error("Error al parsear el objeto 'user' desde localStorage:", error);
+    }
+  }
+  useEffect(() => {
+    const handlePopState = (event) => {
+      navigate("/");
     };
-    
-    
+    window.addEventListener("popstate", handlePopState);
 
-    const handleAreaChange = (event) => {
-        const selectedArea = areas.find(a => a._id === event.target.value);
-        setAreaSeleccionada(selectedArea);
-        const proyectosFiltrados = proyectos.filter(proyecto => proyecto.area._id === event.target.value);
+    const fetchData = async () => {
+      try {
+        const proyectosRes = await axios.get(`${API_URL}/proyectos`);
+        setProyectos(proyectosRes.data);
 
-        setProyectosFiltrados(proyectosFiltrados);
-        setProyectoSeleccionado(null); // Resetear el proyecto seleccionado
-    };
-    const handleProyectoChange = async (event) => {
-        const selectedProyecto = proyectos.find(p => p._id === event.target.value);
-        setProyectoSeleccionado(selectedProyecto);
+        const areasRes = await axios.get(`${API_URL}/areas`);
+        setAreas(areasRes.data);
 
-        if (selectedProyecto) {
-            try {
-                const response = await axios.get(`${API_URL}/oportunidades/${selectedProyecto._id}`);
-                const data = response.data;
+        const probabilidadesRes = await axios.get(`${API_URL}/probabilidad-venta`);
+        setProbabilidadesVentaList(probabilidadesRes.data);
 
-                setOportunidad(data);
+        const [fasesRes, comercialesRes, tecnicosRes] = await Promise.all([
+          axios.get(`${API_URL}/fasesVenta`),
+          axios.get(`${API_URL}/responsables`),
+          axios.get(`${API_URL}/responsables`),
+        ]);
 
-                // Prellenar estados editables
-                setFaseVenta(data.faseVenta);
-                setCodigoProyecto(data.codigoProyecto);
-                setMontoEstimado(data.montoEstimado);
-                setFechaInicio(formatDateToMonthYear(data.fechaInicio)); // Formatear y asignar la fecha
-                setRespComercial(data.respComercial);
-                setRespTecnico(data.respTecnico);
-                setCantidadLapso(data.cantidadLapso);
-                setUnidadLapso(data.unidadLapso);
-                setProbabilidadVenta(data.probabilidadVenta);
-
-            } catch (error) {
-                console.error("❌ Error al obtener oportunidad:", error);
-                setError("Hubo un problema al cargar la oportunidad.");
-            }
-        }
-    };
-    const handleEnviar = async () => {
-        if (!proyectoSeleccionado) {
-            setError("Selecciona un proyecto antes de enviar.");
-            return;
-        }
-
-        const formattedData = {
-            nombreProyecto: proyectoSeleccionado.nombreProyecto,
-            proyectoId: proyectoSeleccionado._id, // 👈 Asegúrate de enviarlo
-            faseVenta,
-            codigoProyecto: proyectoSeleccionado.codigoProyecto,
-            montoEstimado: parseFloat(montoEstimado) || 0,
-            fechaInicio: fechaInicio, // ya está en formato YYYY-MM
-            respComercial,
-            respTecnico,
-            cantidadLapso,
-            unidadLapso,
-            probabilidadVenta,
-            observaciones: observaciones || "Sin observaciones" // 👈 ahora sí mandas observaciones
-        };
-
-        console.log("📤 Enviando al backend:", formattedData); // DEBUG
-
-        try {
-            const response = await axios.post(`${API_URL}/guardar1`, formattedData);
-            console.log("✅ Respuesta del backend:", response.data);
-            alert("Proyecto guardado exitosamente");
-            navigate("/actualizar-oportunidades");
-            setError(null);
-        } catch (error) {
-            console.error("❌ Error al guardar el proyecto:", error.response?.data || error.message);
-            setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
-        }
+        setFasesVentaList(fasesRes.data);
+        setResponsablesComerciales(comercialesRes.data);
+        setResponsablesTecnicos(tecnicosRes.data);
+      } catch (error) {
+        console.error("❌ Error al obtener datos:", error);
+        setError("Hubo un problema al cargar los datos.");
+      }
     };
 
+    fetchData();
 
-    const formatFecha = (fecha) => {
-        const date = new Date(fecha);
-        return `${date.toLocaleString('es-ES', { month: 'long' })} ${date.getFullYear()}`;
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
+
+  const formatDateToMonthYear = (dateString) => {
+    const [year, month] = dateString.split("T")[0].split("-");
+    return `${year}-${month}`;
+  };
+
+  const handleAreaChange = (event) => {
+    const selectedArea = areas.find((a) => a._id === event.target.value);
+    setAreaSeleccionada(selectedArea);
+    const proyectosFiltrados = proyectos.filter(
+      (proyecto) => proyecto.area._id === event.target.value
+    );
+    setProyectosFiltrados(proyectosFiltrados);
+    setProyectoSeleccionado(null); // Resetear el proyecto seleccionado
+  };
+
+  const handleAreaJefeChange = (event) => {
+    const selectedArea = areasUsuario.find((a) => a._id === event.target.value);
+    setAreaSeleccionada(selectedArea);
+    const proyectosFiltrados = proyectos.filter(
+      (proyecto) => proyecto.area._id === event.target.value
+    );
+    setProyectosFiltrados(proyectosFiltrados);
+    setProyectoSeleccionado(null); // Resetear el proyecto seleccionado
+  };
+
+  const handleProyectoChange = async (event) => {
+    const selectedProyecto = proyectos.find((p) => p._id === event.target.value);
+    setProyectoSeleccionado(selectedProyecto);
+
+    if (selectedProyecto) {
+      try {
+        const response = await axios.get(`${API_URL}/oportunidades/${selectedProyecto._id}`);
+        const data = response.data;
+
+        setOportunidad(data);
+        setFaseVenta(data.faseVenta);
+        setCodigoProyecto(data.codigoProyecto);
+        setMontoEstimado(data.montoEstimado);
+        setFechaInicio(formatDateToMonthYear(data.fechaInicio));
+        setRespComercial(data.respComercial);
+        setRespTecnico(data.respTecnico);
+        setProbabilidadVenta(data.probabilidadVenta);
+      } catch (error) {
+        console.error("❌ Error al obtener oportunidad:", error);
+        setError("Hubo un problema al cargar la oportunidad.");
+      }
+    }
+  };
+
+  const handleEnviar = async () => {
+    if (!proyectoSeleccionado) {
+      setError("Selecciona un proyecto antes de enviar.");
+      return;
+    }
+
+    const formattedData = {
+      nombreProyecto: proyectoSeleccionado.nombreProyecto,
+      proyectoId: proyectoSeleccionado._id,
+      faseVenta,
+      codigoProyecto: proyectoSeleccionado.codigoProyecto,
+      montoEstimado: parseFloat(montoEstimado) || 0,
+      fechaInicio: fechaInicio,
+      respComercial,
+      respTecnico,
+      probabilidadVenta,
+      observaciones: observaciones || "Sin observaciones",
     };
 
-    return (
-        <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",  // Alto completo de pantalla
-          width: "100vw",
-          backgroundColor: "#f9f9f9",
-          padding: { xs: "16px", sm: "24px", md: "32px" },
-          boxSizing: "border-box",
-        }}
-        >
-          <Box
+    try {
+      const response = await axios.post(`${API_URL}/guardar1`, formattedData);
+      alert("Proyecto guardado exitosamente");
+      navigate("/actualizar-oportunidades");
+      setError(null);
+    } catch (error) {
+      console.error("❌ Error al guardar el proyecto:", error);
+      setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
+    }
+  };
+
+  return (
+    <Box
       sx={{
-        width: "100%",
-        maxWidth: "600px", // Ajusta el tamaño máximo del cuadro (ajustable)
-        backgroundColor: "white",
-        padding: { xs: "20px", sm: "30px" },
-        borderRadius: "24px",
-        boxShadow: 3,
         display: "flex",
-        flexDirection: "column",
-        gap: 2,
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        backgroundColor: "#f9f9f9",
+        padding: { xs: "16px", sm: "24px", md: "32px" },
+        boxSizing: "border-box",
       }}
     >
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        color="#333333"
+      <Box
         sx={{
-          mb: 2,
-          textAlign: "center",
-          fontSize: { xs: "1.5rem", sm: "2rem" },
+          width: "100%",
+          maxWidth: "600px",
+          backgroundColor: "white",
+          padding: { xs: "20px", sm: "30px" },
+          borderRadius: "24px",
+          boxShadow: 3,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
         }}
       >
-        Oportunidad del Proyecto
-      </Typography>
-      
-              {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      
-              {/* Área */}
-              <TextField
-                fullWidth
-                select
-                label="Seleccionar Área"
-                onChange={handleAreaChange}
-                value={areaSeleccionada ? areaSeleccionada._id : ""}
-                margin="normal"
-              >
-                {areas.map(area => (
-                  <MenuItem key={area._id} value={area._id}>
-                    {area.area}
-                  </MenuItem>
-                ))}
-              </TextField>
-      
-              {/* Proyecto */}
-              {areaSeleccionada && (
-                <TextField
-                  fullWidth
-                  select
-                  label="Seleccionar Proyecto"
-                  onChange={handleProyectoChange}
-                  margin="normal"
-                >
-                  {proyectosFiltrados.map(proyecto => (
-                    <MenuItem key={proyecto._id} value={proyecto._id}>
-                      {proyecto.nombreProyecto}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          color="#333333"
+          sx={{ mb: 2, textAlign: "center", fontSize: { xs: "1.5rem", sm: "2rem" } }}
+        >
+          Oportunidad del Proyecto
+        </Typography>
+
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        {/* Área de selección según el rol */}
+        {roles.includes("admin") && (
+          <TextField
+            fullWidth
+            select
+            label="Seleccionar Área"
+            onChange={handleAreaChange}
+            value={areaSeleccionada ? areaSeleccionada._id : ""}
+            margin="normal"
+          >
+            {areas.map((area) => (
+              <MenuItem key={area._id} value={area._id}>{area.area}</MenuItem>
+            ))}
+          </TextField>
+        )}
+
+        {roles.includes("jefeArea") && (
+          <TextField
+            fullWidth
+            select
+            label="Seleccionar Área"
+            onChange={handleAreaJefeChange}
+            value={areaSeleccionada ? areaSeleccionada._id : ""}
+            margin="normal"
+          >
+            {areasUsuario.map((area) => (
+              <MenuItem key={area._id} value={area._id}>{area.area}</MenuItem>
+            ))}
+          </TextField>
+        )}
+
+        {areaSeleccionada && (
+          <TextField fullWidth select label="Seleccionar Proyecto" onChange={handleProyectoChange} margin="normal">
+            {proyectosFiltrados.map(proyecto => (
+              <MenuItem key={proyecto._id} value={proyecto._id}>{proyecto.nombreProyecto}</MenuItem>
+            ))}
+          </TextField>
+        )}
       
               {/* Datos Oportunidad */}
               {proyectoSeleccionado && oportunidad && (
@@ -251,8 +260,8 @@ function Oportunidades() {
                           fechaInicio,
                           respComercial,
                           respTecnico,
-                          cantidadLapso,
-                          unidadLapso,
+                          //cantidadLapso,
+                          //unidadLapso,
                           probabilidadVenta,
                         }));
                         setEditable(false);
@@ -318,13 +327,13 @@ function Oportunidades() {
                       <Autocomplete
                         fullWidth
                         options={responsablesComerciales}
-                        getOptionLabel={(option) => option.respComercial}
+                        getOptionLabel={(option) => option.nombreCompleto}
                         value={respComercial}
                         onChange={(e, newValue) => setRespComercial(newValue)}
                         renderInput={(params) => <TextField {...params} placeholder="Seleccionar Comercial" />}
                       />
                     ) : (
-                      <TextField fullWidth value={oportunidad.respComercial.respComercial} disabled />
+                      <TextField fullWidth value={oportunidad.respComercial.nombreCompleto} disabled />
                     )}
                   </Box>
       
@@ -335,17 +344,17 @@ function Oportunidades() {
                       <Autocomplete
                         fullWidth
                         options={responsablesTecnicos}
-                        getOptionLabel={(option) => option.respTecnico}
+                        getOptionLabel={(option) => option.nombreCompleto}
                         value={respTecnico}
                         onChange={(e, newValue) => setRespTecnico(newValue)}
                         renderInput={(params) => <TextField {...params} placeholder="Seleccionar Técnico" />}
                       />
                     ) : (
-                      <TextField fullWidth value={oportunidad.respTecnico.respTecnico} disabled />
+                      <TextField fullWidth value={oportunidad.respTecnico.nombreCompleto} disabled />
                     )}
                   </Box>
       
-                  {/* Cantidad Lapso */}
+                  {/* Cantidad Lapso 
                   <Box>
                     <Typography fontWeight="bold">Cantidad Lapso:</Typography>
                     <TextField
@@ -356,7 +365,7 @@ function Oportunidades() {
                     />
                   </Box>
       
-                  {/* Unidad Lapso */}
+                  {/* Unidad Lapso 
                   <Box>
                     <Typography fontWeight="bold">Unidad Lapso:</Typography>
                     <TextField
@@ -370,7 +379,7 @@ function Oportunidades() {
                       <MenuItem value="meses">Mes(es)</MenuItem>
                       <MenuItem value="años">Año(s)</MenuItem>
                     </TextField>
-                  </Box>
+                  </Box>*/}
       
                   {/* Probabilidad de Venta */}
                   <Box>
