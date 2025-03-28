@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// App.jsx
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login";
 import Home from "./Home";
 import Formulario from "./Formulario";
@@ -9,6 +10,7 @@ import InformeProyecto from "./InformeProyecto";
 import Proyeccion from "./Proyeccion";
 import CambioPwd from "./CambioPwd";
 import Responsable from "./Responsable";
+import OlvideContra from "./OlvideContrasenia";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -48,40 +50,46 @@ function App() {
     const handleLogout = () => {
         setIsLoggedIn(false);
         localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         setShowForm(false);
     };
 
-    if (!isLoggedIn) {
-        return <Login onLogin={handleLogin} />;
-    }
-
-    if (showForm) {
-        return <Formulario />;
-    }
-
     return (
-        <div style={styles.globalStyles}>
-            <Router>
+        <Router>
+            <div style={styles.globalStyles}>
                 <Routes>
-                    <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
-                    <Route path="/proyectos" element={<Proyectos />} />
-                    <Route path="/formulario" element={<Formulario />} />
-                    <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
-                    <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
-                    <Route path="/forecast" element={<Proyeccion />} />
-                    <Route path="/cambio-contrasenia" element={<CambioPwd />} />
-                    <Route path="/responsable" element={<Responsable />} />
+                    <Route 
+                        path="/login" 
+                        element={!isLoggedIn ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
+                    />
+                    <Route path="/olvide-contrasenia" element={<OlvideContra />} />
+
+                    {isLoggedIn ? (
+                        <>
+                            <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
+                            <Route path="/proyectos" element={<Proyectos />} />
+                            <Route path="/formulario" element={<Formulario />} />
+                            <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
+                            <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
+                            <Route path="/forecast" element={<Proyeccion />} />
+                            <Route path="/cambio-contrasenia" element={<CambioPwd />} />
+                            <Route path="/responsable" element={<Responsable />} />
+                        </>
+                    ) : (
+                        <Route path="*" element={<Navigate to="/login" />} />
+                    )}
                 </Routes>
-            </Router>
-        </div>
+            </div>
+        </Router>
     );
 }
 
 const styles = {
     globalStyles: {
-        colorScheme: "light",    // Forzar modo claro
-        backgroundColor: "#f4f4f4",  // Fondo claro
-        color: "#333",               // Texto oscuro
+        colorScheme: "light",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
     },
 };
 
