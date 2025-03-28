@@ -56,7 +56,7 @@ function Responsable() {
             correo: data.correo,
             cedula: data.cedula,
             roles: data.roles.map(rol => rol.value),
-            areas: areasFinales.map(area => area.area),
+            areas: areasFinales.map(area => area),
             password: hashedPassword // Se envía la contraseña encriptada
         };
     

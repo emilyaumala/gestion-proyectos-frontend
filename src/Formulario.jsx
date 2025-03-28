@@ -204,7 +204,7 @@ function Formulario() {
                     {/* Nombre del Contacto */}
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
                     {/* Nombre del Contacto */}
-                    <TextField fullWidth label="Correo Electrónico del Contacto" {...register("nombreContacto", { required: false })} margin="normal" />
+                    <TextField fullWidth label="Correo Electrónico del Contacto" {...register("correoContacto", { required: false })} margin="normal" />
                     {/* Número del Contacto */}
                     <TextField fullWidth label="Número del Contacto" type="number" {...register("numeroContacto", { required: false })} margin="normal" /> 
                     <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>

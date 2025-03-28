@@ -10,19 +10,24 @@ function Login({ onLogin }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        // Asegúrate de que username y password contienen los valores correctos
         try {
             const response = await axios.post(`${API_URL}/login`, {
-                correo: username, // Asegúrate de que 'username' contiene el correo
-                password: password // Asegúrate de que 'password' contiene la contraseña ingresada
+                correo: username,
+                password: password
             });
-            localStorage.setItem("user", JSON.stringify(userData)); 
-            // Guardar token en localStorage
-            localStorage.setItem("token", response.data.token);
-            // Llamar a la función de login sin alertas
-            onLogin(response.data.usuario);
+            if (response.data && response.data.usuario) {
+
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("user", JSON.stringify(response.data.usuario)); 
+                console.log(response.data.usuario);
+                console.log(password)
+                onLogin(response.data.usuario);
+            } else {
+                console.error("El objeto 'usuario' no está presente en la respuesta:", response.data);
+                alert("❌ Error al obtener datos de usuario.");
+            }
         } catch (error) {
-            console.error(error);  // Log para ver detalles del error
+            console.error("Error en la solicitud:", error); 
             alert("❌ Correo o contraseña incorrectos");
         }
     };

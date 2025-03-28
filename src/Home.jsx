@@ -3,11 +3,19 @@ import { useNavigate } from "react-router-dom";
 function Home({ onLogout }) {
   const navigate = useNavigate();
 
-      const useAuth = () => {
-          const user = JSON.parse(localStorage.getItem("user"));
-          return user ? user.rol : null;
-      };
-      
+  // Obtener el usuario del localStorage de manera segura
+  const user = localStorage.getItem("user");
+
+  // Asegurarnos de que el valor existe y es un JSON válido antes de hacer el parse
+  let roles = [];
+  if (user) {
+    try {
+      const parsedUser = JSON.parse(user);
+      roles = parsedUser.roles || []; // Asegurarnos que roles es un array
+    } catch (error) {
+      console.error("Error al parsear el objeto 'user' desde localStorage:", error);
+    }
+  }
 
   return (
     <div style={styles.container}>
@@ -16,10 +24,15 @@ function Home({ onLogout }) {
       
       <div style={styles.buttonContainer}>
         <div style={styles.rowButton}>
+          {roles.includes("jefeArea") &&(
           <button style={styles.button} onClick={() => navigate("/formulario")}>
-            📋 Agregar Oportunidad
-          </button>
-
+          📋 Agregar Oportunidad
+        </button>
+          )}
+          {roles.includes("admin") &&(
+          <button style={styles.button} onClick={() => navigate("/formulario")}>
+          📋 Agregar Oportunidad
+        </button>)}
           <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
             📋 Actualizar Oportunidad
           </button>
@@ -32,14 +45,21 @@ function Home({ onLogout }) {
           <button style={styles.button} onClick={() => navigate("/forecast")}>
             📊 Proyección
           </button>
-          <button style={styles.button} onClick={() => navigate("/responsable")}>
-           👥 Añadir Responsable
-          </button>
+          
+          {/* Mostrar botón "Agregar Responsable" solo si el rol es admin */}
+          {roles.includes("admin") && (
+            <button style={styles.button} onClick={() => navigate("/responsable")}>
+              👥 Añadir Responsable
+            </button>
+          )}
+          
+          {/* Mostrar el botón "Cambio contraseña" para todos los usuarios */}
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
           </button>
         </div>
 
+        {/* Mostrar "Cerrar Sesión" */}
         <div style={styles.rowButton}>
           <button style={styles.logoutButton} onClick={onLogout}>
             🚪 Cerrar Sesión
@@ -88,7 +108,6 @@ const styles = {
     gap: "15px",
     justifyContent: "center",
     width: "100%",
-    
   },
   button: {
     padding: "14px 20px",
