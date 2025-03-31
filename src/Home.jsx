@@ -49,17 +49,9 @@ function Home({ onLogout }) {
           📋 Actualizar Oportunidad
         </button>
         )}
-        {roles.includes("jefeArea") &&(
-          <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
-          📋 Actualizar Oportunidad
-        </button>
-        )}
 
           <button style={styles.button} onClick={() => navigate("/proyectos")}>
             📜 Ver Oportunidades
-          </button>
-          <button style={styles.button} onClick={() => navigate("/forecast")}>
-            📊 Proyección
           </button>
         </div>
 
@@ -79,6 +71,9 @@ function Home({ onLogout }) {
           )}
 
           {/* Mostrar el botón "Cambio contraseña" para todos los usuarios */}
+          <button style={styles.button} onClick={() => navigate("/forecast")}>
+            📊 Proyección
+          </button>
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
           </button>
