@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Alert } from "@mui/material";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
@@ -13,9 +14,10 @@ function Cambiopwd() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setVerifyPwdError("")
+    setComparacionError("")
     const token = localStorage.getItem('token');  // Recupera el token del localStorage
-
+    console.log("token", token)
     if (!token) {
       console.error("Token no encontrado. El usuario no está autenticado.");
       setVerifyPwdError("El usuario no está autenticado. Inicie sesión.");
@@ -29,7 +31,7 @@ function Cambiopwd() {
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_URL}/cambiar-password`,  // URL correcta
         { contraseniaActual, newPassword },  // Asegúrate de enviar los datos correctos
         {
@@ -39,22 +41,41 @@ function Cambiopwd() {
         }
       );
       //console.log(response.data);  // Procesa la respuesta correctamente
+      toast.success("Contraseña cambiada exitosamente", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       setVerifyPwdError("");  // Limpia el error si la respuesta es exitosa
-      alert("Contraseña cambiada exitosamente");  // Notificación de éxito
+      setComparacionError("");
+      setContraseniaActual("");
+      setNewPassword("");
+      setConfirPwd("");
     } catch (error) {
       console.error("Error al cambiar la contraseña:", error);
-      if (error.response && error.response.status === 401) {
-        setVerifyPwdError("Token inválido o expirado. Inicie sesión nuevamente.");
-      } else {
-        setVerifyPwdError("Hubo un error al cambiar la contraseña. Intente nuevamente.");
-      }
+      setVerifyPwdError(error.response.data.error)
+      // if (error.response && error.response.status === 401) {
+      //   setVerifyPwdError("Contraseña actual incorrecta");
+      // } else {
+      //   setVerifyPwdError("Hubo un error al cambiar la contraseña. Intente nuevamente.");
+      // }
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
+        <button onClick={() => window.history.back()} style={styles.backButton}>
+          ⬅ Volver
+        </button>
         <h1 style={styles.title}>🔒 Cambio de contraseña</h1>
+        <ToastContainer />
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="password"
@@ -77,7 +98,7 @@ function Cambiopwd() {
             onChange={(e) => setConfirPwd(e.target.value)}
             style={styles.input}
           />
-          
+
           {comparacionError && <Alert severity="error">{comparacionError}</Alert>}
           {verifyPwdError && <Alert severity="error">{verifyPwdError}</Alert>}
 
@@ -131,6 +152,19 @@ const styles = {
     width: "100%",
     margin: "10px 0"
   },
+  backButton: {
+    background: "transparent",
+    border: "none",
+    color: "#007bff",
+    fontSize: "16px",
+    cursor: "pointer",
+    textAlign: "left",
+    width: "100%",
+    marginBottom: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px"
+}
 };
 
 export default Cambiopwd;

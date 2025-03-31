@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
@@ -17,11 +18,11 @@ function Login({ onLogin }) {
                 correo: username,
                 password: password
             });
-            
+
             if (response.data && response.data.usuario) {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.usuario));
-                
+
                 onLogin();
                 navigate("/"); // Navegar a la página de inicio después del login
             } else {
@@ -30,7 +31,16 @@ function Login({ onLogin }) {
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert("❌ Correo o contraseña incorrectos");
+            toast.error("Error credenciales incorrectas", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     };
 
@@ -40,7 +50,7 @@ function Login({ onLogin }) {
                 <img src="/logo.png" alt="Logo de la empresa" style={styles.logo} />
                 <h2 style={styles.title}>Constecoin</h2>
                 <h3 style={styles.subtitle}>Gestión de Oportunidades</h3>
-
+                <ToastContainer />
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <input
                         type="text"

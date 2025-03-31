@@ -60,11 +60,11 @@ function Home({ onLogout }) {
           {/* Mostrar botón "Agregar Responsable" solo si el rol es admin */}
           {roles.includes("admin") && (
             <>
-              <button style={styles.button} onClick={() => navigate("/responsable")}>
-                👥 Añadir Responsable
+              <button style={styles.button} onClick={() => navigate("/responsables")}>
+                👥 Responsables
               </button>
-              <button style={styles.button}>
-                🤝🏽 Añadir Clientes
+              <button style={styles.button} onClick={() => navigate("/clientes")}>
+                🤝🏽 Clientes
               </button>
             </>
           )}

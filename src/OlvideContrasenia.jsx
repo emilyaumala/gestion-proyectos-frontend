@@ -1,22 +1,45 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Alert, CircularProgress } from "@mui/material";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
 function OlvideContrasenia() {
-    const [correo, setCorreo] = useState("")
+    const [correo, setCorreo] = useState("");
+    const [error, setError] = useState("");
+    const [cargando, setCatgando] = useState("");
+
     const mensaje = "Tú nueva contraseña está en el email indicado. Por favor actualizarla."
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("")
+        if (correo == "") {
+            setError("Por favor, ingresa un correo electrónico")
+            return;
+        }
+
+        setCatgando(true)
         try {
-            const respuesta = axios.post(`${API_URL}/recuperar-password`, {correo: correo} );
-            console.log(respuesta.status)
-            if(respuesta.status == 400 || respuesta.status==404){
-                setError(respuesta.error)
-            }
+            await axios.post(`${API_URL}/recuperar-password`, { correo: correo });
+            toast.success("📩 ¡Correo enviado! Revisa tu bandeja de entrada.", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            setCorreo("")
         } catch (e) {
-            console.log("error al recuperar contraseña", e)
+            console.log("error al recuperar contraseña", e.response.data.error)
+            setError(e.response.data.error)
+        } finally {
+            setCatgando(false)
         }
     }
 
@@ -24,6 +47,7 @@ function OlvideContrasenia() {
         <div style={styles.container}>
             <div style={styles.loginBox}>
                 <h1 style={styles.title}>📤 Restablecer contraseña</h1>
+                <ToastContainer/>
                 <form onSubmit={handleSubmit}>
                     <div>Ingrese su correo electrónico para recibir una nueva contraseña</div>
                     <input
@@ -33,7 +57,10 @@ function OlvideContrasenia() {
                         onChange={(e) => setCorreo(e.target.value)}
                         style={styles.input}
                     />
-                    <button type="submit" style={styles.button}>✔ Restablecer contraseña</button>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    <button type="submit" style={styles.button} disabled={cargando}>
+                        {cargando ? <CircularProgress size={20} color="inherit" /> : "✔ Restablecer contraseña"}
+                    </button>
                 </form>
                 <Link to="/" style={styles.forgotPassword}>
                     🔙 Volver al login

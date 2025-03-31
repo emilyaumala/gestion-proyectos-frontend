@@ -13,6 +13,7 @@ const Proyectos = () => {
       .then((response) => {
         setProyectos(response.data);
         setFilteredData(response.data);
+        console.log(response.data)
       })
       .catch((error) => console.error("Error al obtener proyectos:", error));
   }, []);
@@ -195,15 +196,15 @@ const Proyectos = () => {
       title: "Responsable Comercial",
       dataIndex: "respComercial",
       key: "respComercial",
-      ...getColumnSearchProps("respComercial", "respComercial"), // Acceder a la propiedad respComercial dentro del objeto respComercial
-      render: (respComercial) => respComercial ? respComercial.respComercial : "No disponible",  // Renderiza "No disponible" si es null
+      ...getColumnSearchProps("respComercial", "nombreCompleto"), // Acceder a la propiedad respComercial dentro del objeto respComercial
+      render: (respComercial) => respComercial ? respComercial.nombreCompleto : "No disponible",  // Renderiza "No disponible" si es null
     },
     {
       title: "Responsable Técnico",
       dataIndex: "respTecnico",
       key: "respTecnico",
-      ...getColumnSearchProps("respTecnico", "respTecnico"), // Acceder a la propiedad respTecnico dentro del objeto respTecnico
-      render: (respTecnico) => respTecnico ? respTecnico.respTecnico : "No disponible",  // Muestra "No disponible" si es null
+      ...getColumnSearchProps("respTecnico", "nombreCompleto"), // Acceder a la propiedad respTecnico dentro del objeto respTecnico
+      render: (respTecnico) => respTecnico ? respTecnico.nombreCompleto : "No disponible",  // Muestra "No disponible" si es null
     },
    /* {
       title: "Observaciones",
