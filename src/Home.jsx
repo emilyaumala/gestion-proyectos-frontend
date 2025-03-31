@@ -30,12 +30,25 @@ function Home({ onLogout }) {
         </button>
           )}
           {roles.includes("admin") &&(
-          <button style={styles.button} onClick={() => navigate("/formulario")}>
-          📋 Agregar Oportunidad
+          <button style={styles.button} onClick={() => navigate("/notificar-oportunidad")}>
+          📋 Notificar Oportunidad
         </button>)}
+        {roles.includes("responsable") &&(
+          <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
+          📋 Actualizar OportunidadRes
+        </button>
+        )}
+                {roles.includes("admin") &&(
+          <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
+          📋 Actualizar OportunidadRes
+        </button>
+        )}
+        {roles.includes("jefeArea") &&(
           <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
-            📋 Actualizar Oportunidad
-          </button>
+          📋 Actualizar Oportunidad
+        </button>
+        )}
+
           <button style={styles.button} onClick={() => navigate("/proyectos")}>
             📜 Ver Oportunidades
           </button>

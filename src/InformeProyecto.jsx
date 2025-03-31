@@ -395,6 +395,12 @@ const InformeProyecto = () => {
         >
           🖨️
         </Button>
+        <Button
+                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        onClick={() => window.location.href = `/`}
+                    >
+                        Regresar
+                    </Button>
       </div>
     </div>
   );

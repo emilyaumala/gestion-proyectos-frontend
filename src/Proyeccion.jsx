@@ -203,9 +203,14 @@ const Proyeccion = () => {
         <h3 style={styles.sectionTitle}>Gráfico de Forecast Mensual vs Acumulado</h3>
         <Bar data={chartData} options={chartOptions} />
       </div>
+      
     </div>
+      
+    
   );
+  
 };
+
   
   const styles = {
     container: {

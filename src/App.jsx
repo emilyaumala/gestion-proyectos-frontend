@@ -9,6 +9,8 @@ import InformeProyecto from "./InformeProyecto";
 import Proyeccion from "./Proyeccion";
 import CambioPwd from "./CambioPwd";
 import Responsable from "./Responsable";
+import OportunidadesRes from "./OportunidadesRes";
+import NotificarOportunidad from "./NotificarOportunidad";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -71,6 +73,8 @@ function App() {
                     <Route path="/forecast" element={<Proyeccion />} />
                     <Route path="/cambio-contrasenia" element={<CambioPwd />} />
                     <Route path="/responsable" element={<Responsable />} />
+                    <Route path="/actualizar-oportunidades-res" element={<OportunidadesRes />} />
+                    <Route path="/notificar-oportunidad" element={<NotificarOportunidad />} />
                 </Routes>
             </Router>
         </div>

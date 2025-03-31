@@ -134,7 +134,6 @@ function Responsable() {
                         <Controller
                             name="telefono"
                             control={control}
-                            rules={{ required: true }}
                             render={({ field }) => (
                                 <PhoneInput
                                     international
@@ -152,6 +151,12 @@ function Responsable() {
 
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Guardar Responsable
+                    </Button>
+                    <Button
+                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        onClick={() => window.location.href = `/`}
+                    >
+                        Regresar
                     </Button>
                 </Box>
             </Container>

@@ -19,8 +19,8 @@ function Login({ onLogin }) {
 
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.usuario)); 
-                console.log(response.data.usuario);
-                console.log(password)
+                //console.log(response.data.usuario);
+                //console.log(password)
                 onLogin(response.data.usuario);
             } else {
                 console.error("El objeto 'usuario' no está presente en la respuesta:", response.data);

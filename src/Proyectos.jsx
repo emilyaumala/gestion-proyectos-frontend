@@ -291,6 +291,12 @@ const Proyectos = () => {
             style={{ minWidth: "600px" }} // Asegura legibilidad en pantallas chicas con scroll lateral
           />
         </div>
+        <Button
+                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        onClick={() => window.location.href = `/`}
+                    >
+                        Regresar
+                    </Button>
       </div>
     </div>
   );
