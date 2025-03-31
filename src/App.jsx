@@ -12,8 +12,9 @@ import CambioPwd from "./CambioPwd";
 import Responsable from "./AgregarResponsable";
 import ListResponsables from "./Responsables"
 import OlvideContra from "./OlvideContrasenia";
-import ListaClientes from "./Clientes"
-import AddCliente from "./AgregarCliente"
+import ListaClientes from "./Clientes";
+import AddCliente from "./AgregarCliente";
+import Calendario from "./Calendario";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -81,6 +82,7 @@ function App() {
                             <Route path="/clientes" element={<ListaClientes />} />
                             <Route path="/agregar-responsable" element={<Responsable />} />
                             <Route path="/agregar-cliente" element={<AddCliente />} />
+                            <Route path="/calendario" element={<Calendario />} />
                         </>
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />

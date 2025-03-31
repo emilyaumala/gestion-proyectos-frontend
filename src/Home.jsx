@@ -70,6 +70,9 @@ function Home({ onLogout }) {
           )}
 
           {/* Mostrar el botón "Cambio contraseña" para todos los usuarios */}
+          <button style={styles.button} onClick={() => navigate("/calendario")}>
+            📅 Eventos
+          </button>
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
           </button>
