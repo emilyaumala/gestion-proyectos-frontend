@@ -139,59 +139,37 @@ function OportunidadesRes() {
 
     const handleEnviar = async () => {
         if (!proyectoSeleccionado) {
-            setError("Selecciona un proyecto antes de enviar.");
-            return;
+          setError("Selecciona un proyecto antes de enviar.");
+          return;
         }
-
-        // Combinamos la fecha con la hora de inicio y fin
-        const fechaCompletaInicio = new Date(`${fechaInicio}T${horaInicio}:00`);
-        const fechaCompletaFin = new Date(`${fechaInicio}T${horaFin}:00`);
-
-        // Crear los datos de la oportunidad
-        const oportunidadData = {
-            nombreProyecto: proyectoSeleccionado.nombreProyecto,
-            proyectoId: proyectoSeleccionado._id,
-            faseVenta,
-            codigoProyecto: proyectoSeleccionado.codigoProyecto,
-            montoEstimado: parseFloat(montoEstimado) || 0,
-            fechaInicio: fechaInicio,
-            respComercial,
-            respTecnico,
-            probabilidadVenta,
-            observaciones: observaciones || "Sin observaciones",
-            nombreProyecto: parsedUser.nombreCompleto
+        const formattedData = {
+          nombreProyecto: proyectoSeleccionado.nombreProyecto,
+          proyectoId: proyectoSeleccionado._id,
+          faseVenta,
+          codigoProyecto: proyectoSeleccionado.codigoProyecto,
+          montoEstimado: parseFloat(montoEstimado) || 0,
+          fechaInicio: fechaInicio,
+          respComercial,
+          respTecnico,
+          probabilidadVenta,
+          observaciones: observaciones || "Sin observaciones",
+          descripcionActividad ,
+          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+          horaFin : horaFin ,    // Recibimos la fecha y hora de fin combinadas
+          nombreUsuario : nombreCompleto
         };
-
-        // Crear los datos de la actividad
-        const actividadData = showActivityFields
-            ? {
-                descripcion: actividadDescripcion,
-                horaInicio: fechaCompletaInicio.toISOString(), // Enviamos fecha y hora completas
-                horaFin: fechaCompletaFin.toISOString(), // Enviamos fecha y hora completas
-                proyectoId: proyectoSeleccionado._id,
-                nombreProyecto: parsedUser.nombreCompleto
-            }
-            : null;
-
+    
         try {
-            // Enviar tanto la oportunidad como la actividad en la misma solicitud
-            const dataToSend = {
-                oportunidad: oportunidadData,
-                actividad: actividadData,
-            };
-
-            await axios.post(`${API_URL}/guardar1`, dataToSend);  // Usa la misma API para guardar ambos
-
-            alert("Oportunidad y actividad guardadas exitosamente");
-
-            // Redirigir después de guardar
-            navigate("/actualizar-oportunidades");
-            setError(null);
+          const response = await axios.post(`${API_URL}/guardar1`, formattedData);
+          alert("Proyecto guardado exitosamente");
+          navigate("/actualizar-oportunidades");
+          setError(null);
         } catch (error) {
-            console.error("❌ Error al guardar la oportunidad y/o actividad:", error);
-            setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
+          console.error("❌ Error al guardar el proyecto:", error);
+          setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
         }
-    };
+      };
+
     const formatCurrency = (value) => {
         if (!value) return "$0.00";
         return new Intl.NumberFormat("en-US", {
