@@ -1,37 +1,48 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
             const response = await axios.post(`${API_URL}/login`, {
                 correo: username,
                 password: password
             });
-            if (response.data && response.data.usuario) {
 
+            if (response.data && response.data.usuario) {
                 localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.usuario)); 
-                //console.log(response.data.usuario);
-                //console.log(password)
-                onLogin(response.data.usuario);
+                localStorage.setItem("user", JSON.stringify(response.data.usuario));
+
+                onLogin();
+                navigate("/"); // Navegar a la página de inicio después del login
             } else {
                 console.error("El objeto 'usuario' no está presente en la respuesta:", response.data);
                 alert("❌ Error al obtener datos de usuario.");
             }
         } catch (error) {
-            console.error("Error en la solicitud:", error); 
-            alert("❌ Correo o contraseña incorrectos");
+            console.error("Error en la solicitud:", error);
+            toast.error("Error credenciales incorrectas", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     };
-    
 
     return (
         <div style={styles.container}>
@@ -39,7 +50,7 @@ function Login({ onLogin }) {
                 <img src="/logo.png" alt="Logo de la empresa" style={styles.logo} />
                 <h2 style={styles.title}>Constecoin</h2>
                 <h3 style={styles.subtitle}>Gestión de Oportunidades</h3>
-
+                <ToastContainer />
                 <form onSubmit={handleSubmit} style={styles.form}>
                     <input
                         type="text"
@@ -59,11 +70,13 @@ function Login({ onLogin }) {
                         Ingresar
                     </button>
                 </form>
+                <Link to="/olvide-contrasenia" style={styles.forgotPassword}>
+                    ¿Olvidaste la contraseña?
+                </Link>
             </div>
         </div>
     );
 }
-
 const styles = {
     container: {
         display: "flex",
@@ -103,6 +116,14 @@ const styles = {
         borderRadius: "50px",
         border: "1px solid #ccc",
         fontSize: "16px"
+    },
+    forgotPassword: {
+        display: "block",
+        color: "#007bff",
+        fontSize: "14px",
+        marginTop: "5px",
+        cursor: "pointer",
+        textDecoration: "none",
     },
     button: {
         padding: "10px",

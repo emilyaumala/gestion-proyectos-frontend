@@ -21,13 +21,19 @@ function Home({ onLogout }) {
     <div style={styles.container}>
       <h1 style={styles.title}>Bienvenido a Constecoin</h1>
       <p style={styles.subtitle}>Selecciona una opción:</p>
-      
+
       <div style={styles.buttonContainer}>
         <div style={styles.rowButton}>
-          {roles.includes("jefeArea") &&(
-          <button style={styles.button} onClick={() => navigate("/formulario")}>
-          📋 Agregar Oportunidad
-        </button>
+          {roles.includes("jefeArea") && (
+            <>
+              <button style={styles.button} onClick={() => navigate("/formulario")}>
+                📋 Agregar Oportunidad
+              </button>
+              <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
+                📋 Actualizar Oportunidad
+              </button>
+            </>
+
           )}
           {roles.includes("admin") &&(
           <button style={styles.button} onClick={() => navigate("/notificar-oportunidad")}>
@@ -35,12 +41,12 @@ function Home({ onLogout }) {
         </button>)}
         {roles.includes("responsable") &&(
           <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
-          📋 Actualizar OportunidadRes
+          📋 Actualizar Oportunidad
         </button>
         )}
                 {roles.includes("admin") &&(
           <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
-          📋 Actualizar OportunidadRes
+          📋 Actualizar Oportunidad
         </button>
         )}
         {roles.includes("jefeArea") &&(
@@ -52,20 +58,26 @@ function Home({ onLogout }) {
           <button style={styles.button} onClick={() => navigate("/proyectos")}>
             📜 Ver Oportunidades
           </button>
-        </div>
-
-        <div style={styles.rowButton}>
           <button style={styles.button} onClick={() => navigate("/forecast")}>
             📊 Proyección
           </button>
-          
+        </div>
+
+        <div style={styles.rowButton}>
+
+
           {/* Mostrar botón "Agregar Responsable" solo si el rol es admin */}
           {roles.includes("admin") && (
-            <button style={styles.button} onClick={() => navigate("/responsable")}>
-              👥 Añadir Responsable
-            </button>
+            <>
+              <button style={styles.button} onClick={() => navigate("/responsables")}>
+                👥 Responsables
+              </button>
+              <button style={styles.button} onClick={() => navigate("/clientes")}>
+                🤝🏽 Clientes
+              </button>
+            </>
           )}
-          
+
           {/* Mostrar el botón "Cambio contraseña" para todos los usuarios */}
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
