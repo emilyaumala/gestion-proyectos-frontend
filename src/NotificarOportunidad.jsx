@@ -20,7 +20,7 @@ function NotificarOportunidad() {
     const [responsablesComerciales, setResponsablesComerciales] = useState([]);
     const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
     const [responsables, setResponsables] = useState([]);
-
+    const [jefesDeArea, setJefesDeArea] = useState([]); // Estado para jefes de área
     const navigate = useNavigate(); // Inicializa navigate
 
     useEffect(() => {
@@ -82,6 +82,7 @@ function NotificarOportunidad() {
             nombreProyecto: data.nombreProyecto,
             codigoProyecto: data.codigoProyecto,
             area: data.area,
+            jefeArea: data.jefeArea,
             //montoEstimado: parseFloat(data.montoEstimado) || 0,
             //faseVenta: data.faseVenta,
             //probabilidadVenta: data.probabilidadVenta,
@@ -127,16 +128,23 @@ function NotificarOportunidad() {
         setValue("cliente", value || "");
     };
 
-    const handleAreaChange = (event2, value) => {
-        const areaExiste = areas.some(area => area.area.toLowerCase() === (value?.toLowerCase() || ""));
-
-        if (value && !areaExiste) {
-            setAreaError(`El area '${value}' no existe, pídele al administrador que lo agregue.`);
-        } else {
+    const handleAreaChange = async (event, value) => {
+        if (value && value.id) {
+            setValue("area", value.id);
             setAreaError("");
-        }
 
-        setValue("area", value || "");
+            // Llamada a la API para obtener jefes de área
+            try {
+                const response = await axios.get(`${API_URL}/responsables/${value.id}`);
+                setJefesDeArea(response.data); // Guarda los jefes de área encontrados
+            } catch (error) {
+                console.error("❌ Error al obtener jefes de área:", error);
+                setJefesDeArea([]); // Resetea la lista si hay error
+            }
+        } else {
+            setAreaError("Selecciona un área válida de la lista.");
+            setJefesDeArea([]); // Si el área no es válida, limpia los jefes de área
+        }
     };
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
@@ -178,12 +186,11 @@ function NotificarOportunidad() {
                     <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
 
 
-                    {/* Area */}
+                    {/* Área */}
                     {areaError && <Alert severity="error" sx={{ mb: 2 }}>{areaError}</Alert>}
                     <Autocomplete
                         freeSolo
                         options={areas.map(area => ({ label: area.area, id: area._id }))}
-                        onInputChange={(event2, newValue) => setValue("area", newValue)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -193,15 +200,20 @@ function NotificarOportunidad() {
                                 helperText={areaError}
                             />
                         )}
-                        onChange={(event2, value) => {
-                            if (value && value.id) {
-                                setValue("area", value.id);
-                                setAreaError("");
-                            } else {
-                                setAreaError("Selecciona un área válido de la lista o agrégalo correctamente.");
-                            }
-                        }}
+                        onChange={handleAreaChange}
                     />
+
+                    {/* Jefe de Área - Se muestra solo si hay jefes disponibles */}
+                    {jefesDeArea.length > 0 && (
+                        <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#f5f5f5" }}>
+                            <Typography fontWeight="bold" sx={{ mb: 1 }}>Seleccionar Jefe de Área:</Typography>
+                            <Autocomplete
+                                options={jefesDeArea.map(jefe => ({ label: jefe.nombreCompleto, id: jefe._id }))}
+                                renderInput={(params) => <TextField {...params} label="Jefe de Área" margin="normal" />}
+                                onChange={(event, value) => setValue("jefeArea", value?.id || "")}
+                            />
+                        </Box>
+                    )}
 
 
                     {/* Nombre del Proyecto */}

@@ -10,6 +10,7 @@ const API_URL = "https://crm.constecoin.com/apicrm";
 
 function OportunidadesRes() {
     const [proyectos, setProyectos] = useState([]);
+    const [actualizaciones, setActualizaciones] = useState([]);
     const [areas, setAreas] = useState([]);
     const [proyectosFiltrados, setProyectosFiltrados] = useState([]);
     const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
@@ -67,14 +68,28 @@ function OportunidadesRes() {
         const fetchData = async () => {
             try {
                 const proyectosRes = await axios.get(`${API_URL}/proyectos`);
+                const actualizacionesRes = await axios.get (`${API_URL}/actualizaciones/ultimas`)
                 setProyectos(proyectosRes.data);
-                const proyectosFiltrados = proyectosRes.data.filter(
-                    (proyecto) =>
-                        proyecto.respComercial?.['_id'] === userId || proyecto.respTecnico?.['_id'] === userId
-                );
-                //console.log(user._id)
+                setActualizaciones(actualizacionesRes.data)
+                // Crear un diccionario con la última actualización de cada proyecto
+                const ultimasActualizaciones = {};
+                actualizacionesRes.data.forEach((item) => {
+                    const actualizacion = item.ultimaActualizacion; // Ajuste: Acceder al objeto anidado
+                    ultimasActualizaciones[item._id] = actualizacion;
+                });
+    
+                // Filtrar proyectos donde el usuario es responsable en la última actualización
+                const proyectosFiltrados = proyectosRes.data.filter((proyecto) => {
+                    const ultimaActualizacion = ultimasActualizaciones[proyecto._id];
+    
+                    return (
+                        ultimaActualizacion?.respComercial === userId || 
+                        ultimaActualizacion?.respTecnico === userId
+                    );
+                });
+    
                 setProyectosFiltrados(proyectosFiltrados);
-                //console.log("Poryeco",proyectosFiltrados)
+                console.log("Proyectos filtrados: ", proyectosFiltrados)
                 const areasRes = await axios.get(`${API_URL}/areas`);
                 setAreas(areasRes.data);
 
@@ -90,9 +105,6 @@ function OportunidadesRes() {
                 setFasesVentaList(fasesRes.data);
                 setResponsablesComerciales(comercialesRes.data);
                 setResponsablesTecnicos(tecnicosRes.data);
-                if (roles.includes("responsable")) {
-                    setProyectosFiltrados(proyectosRes.data.filter(p => p.respComercial?.['_id'] === userId || p.respTecnico?.['_id'] === userId));
-                }
             } catch (error) {
                 console.error("❌ Error al obtener datos:", error);
                 setError("Hubo un problema al cargar los datos.");
@@ -118,8 +130,9 @@ function OportunidadesRes() {
         const selectedProyecto = proyectos.find((p) => p._id === event.target.value) || null;
         setProyectoSeleccionado(selectedProyecto);
         if (selectedProyecto) {
+          const ultimaActualizacion = actualizaciones.find((a) => a._id === selectedProyecto._id)?.ultimaActualizacion;
             try {
-                const response = await axios.get(`${API_URL}/oportunidades/${selectedProyecto._id}`);
+                const response = await axios.get(`${API_URL}/oportunidades/${ultimaActualizacion.proyectoId}`);
                 const data = response.data;
 
                 setOportunidad(data);
@@ -153,16 +166,16 @@ function OportunidadesRes() {
           respTecnico,
           probabilidadVenta,
           observaciones: observaciones || "Sin observaciones",
-          descripcionActividad ,
-          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+          descripcionActividad: descripcionActividad ,
+          horaInicio: horaInicio ,  // Recibimos la fecha y hora de inicio combinadas
           horaFin : horaFin ,    // Recibimos la fecha y hora de fin combinadas
           nombreUsuario : nombreCompleto
         };
     
         try {
           const response = await axios.post(`${API_URL}/guardar1`, formattedData);
-          alert("Proyecto guardado exitosamente");
-          navigate("/actualizar-oportunidades");
+          alert("Actualización guardada exitosamente");
+          window.location.reload();
           setError(null);
         } catch (error) {
           console.error("❌ Error al guardar el proyecto:", error);

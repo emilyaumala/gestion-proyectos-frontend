@@ -23,7 +23,7 @@ function Login({ onLogin }) {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", JSON.stringify(response.data.usuario));
 
-                onLogin();
+                onLogin(response.data.usuario);
                 navigate("/"); // Navegar a la página de inicio después del login
             } else {
                 console.error("El objeto 'usuario' no está presente en la respuesta:", response.data);

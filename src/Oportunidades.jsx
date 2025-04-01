@@ -176,7 +176,7 @@
     
         try {
           const response = await axios.post(`${API_URL}/guardar1`, formattedData);
-          alert("Proyecto guardado exitosamente");
+          alert("Actualización guardada exitosamente");
           navigate("/actualizar-oportunidades");
           setError(null);
         } catch (error) {

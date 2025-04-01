@@ -10,7 +10,9 @@ import { NumericFormat } from "react-number-format";
 const API_URL = "https://crm.constecoin.com/apicrm/";
 
 function Formulario() {
-    const { register, handleSubmit, reset, setValue, watch, control } = useForm();
+    const { register, handleSubmit, reset, setValue, watch, control, formState: { errors }, } = useForm();
+    const correoContacto = watch("correoContacto");
+    const numeroContacto = watch("numeroContacto");
     const [error, setError] = useState(null);
     const [clienteError, setClienteError] = useState("");
     const [areaError, setAreaError] = useState("");
@@ -173,6 +175,7 @@ function Formulario() {
 
         setValue("respTecnico", value || "");
     };
+
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
@@ -200,32 +203,45 @@ function Formulario() {
                                 setValue("cliente", value.id);
                                 setClienteError("");
                             } else {
-                                setClienteError("Selecciona un cliente válido de la lista o agrégalo correctamente.");
+                                setClienteError("Selecciona un cliente válido o pidele  al administrador que lo agregue.");
                             }
                         }}
                     />
                     {/* Nombre del Contacto */}
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
-                    {/* Nombre del Contacto */}
-                    <TextField fullWidth label="Correo Electrónico del Contacto" {...register("correoContacto", { required: false })} margin="normal" />
-                    {/* Número del Contacto */}
-                    {/*<TextField fullWidth label="Número del Contacto" type="number" {...register("numeroContacto", { required: false })} margin="normal" /> */}
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                        <Controller
-                            name="numeroContacto"
-                            control={control}
-                            render={({ field }) => (
-                                <PhoneInput
-                                    international
-                                    defaultCountry="EC"
-                                    {...field}
-                                    onChange={(value) => field.onChange(value)}
-                                    style={{ width: "98%", padding: "10px", fontSize: "16px" }}
-                                />
-                            )}
-                        />
-                    </FormControl>
-                    <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
+
+
+<TextField
+    fullWidth
+    label="Correo Electrónico del Contacto"
+    {...register("correoContacto", {
+        required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
+    })}
+    margin="normal"
+    error={Boolean(errors.correoContacto)}
+    helperText={errors.correoContacto?.message}
+/>
+
+<FormControl fullWidth sx={{ mt: 2 }}>
+    <Controller
+        name="numeroContacto"
+        control={control}
+        rules={{
+            required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
+        }}
+        render={({ field }) => (
+            <PhoneInput
+                international
+                defaultCountry="EC"
+                {...field}
+                onChange={(value) => field.onChange(value)}
+                style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+            />
+        )}
+    />
+    {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
+</FormControl>
+
 
                     {/* Area */}
                     {areaError && <Alert severity="error" sx={{ mb: 2 }}>{areaError}</Alert>}

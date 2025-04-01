@@ -5,7 +5,7 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
-function Cambiopwd() {
+function Cambiopwd({ onLogout }) { // Recibe onLogout como prop
   const [contraseniaActual, setContraseniaActual] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirPwd, setConfirPwd] = useState("");
@@ -14,17 +14,15 @@ function Cambiopwd() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setVerifyPwdError("")
-    setComparacionError("")
-    const token = localStorage.getItem('token');  // Recupera el token del localStorage
-    console.log("token", token)
+    setVerifyPwdError("");
+    setComparacionError("");
+    
+    const token = localStorage.getItem("token");
     if (!token) {
-      console.error("Token no encontrado. El usuario no está autenticado.");
       setVerifyPwdError("El usuario no está autenticado. Inicie sesión.");
       return;
     }
 
-    // Verifica que las contraseñas coincidan antes de enviar la solicitud
     if (newPassword !== confirPwd) {
       setComparacionError("Las contraseñas no coinciden.");
       return;
@@ -32,18 +30,18 @@ function Cambiopwd() {
 
     try {
       await axios.post(
-        `${API_URL}/cambiar-password`,  // URL correcta
-        { contraseniaActual, newPassword },  // Asegúrate de enviar los datos correctos
+        `${API_URL}/cambiar-password`,
+        { contraseniaActual, newPassword },
         {
           headers: {
-            Authorization: `Bearer ${token}`,  // Aquí se está enviando el token correctamente en el encabezado
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      //console.log(response.data);  // Procesa la respuesta correctamente
-      toast.success("Contraseña cambiada exitosamente", {
+
+      toast.success("Contraseña cambiada exitosamente. Redirigiendo...", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 3000, // Mensaje visible por 3 segundos
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -52,19 +50,15 @@ function Cambiopwd() {
         theme: "light",
         transition: Bounce,
       });
-      setVerifyPwdError("");  // Limpia el error si la respuesta es exitosa
-      setComparacionError("");
-      setContraseniaActual("");
-      setNewPassword("");
-      setConfirPwd("");
+
+      setTimeout(() => {
+        localStorage.removeItem("token"); // Elimina el token
+        onLogout(); // Cierra sesión y redirige al login
+      }, 3000);
+
     } catch (error) {
       console.error("Error al cambiar la contraseña:", error);
-      setVerifyPwdError(error.response.data.error)
-      // if (error.response && error.response.status === 401) {
-      //   setVerifyPwdError("Contraseña actual incorrecta");
-      // } else {
-      //   setVerifyPwdError("Hubo un error al cambiar la contraseña. Intente nuevamente.");
-      // }
+      setVerifyPwdError(error.response?.data?.error || "Error al cambiar la contraseña.");
     }
   };
 
@@ -108,7 +102,6 @@ function Cambiopwd() {
     </div>
   );
 }
-
 const styles = {
   container: {
     display: "flex",

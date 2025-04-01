@@ -5,7 +5,7 @@ import { Table, Input, Button, Space, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import { autoTable } from "jspdf-autotable";
-
+import { format } from 'date-fns';
 
 
 const InformeProyecto = () => {
@@ -25,6 +25,8 @@ const InformeProyecto = () => {
   const [observaciones, setObservaciones] = useState("");
   const [respTecnico, setRespTecnico] = useState("");
   const [error, setError] = useState(null);
+  const [actividades, setActividades] = useState([]);
+
 
   useEffect(() => {
     axios
@@ -49,7 +51,7 @@ const InformeProyecto = () => {
           ...oportunidad,
           lapsoEjecucion: `${oportunidad.cantidadLapso} ${oportunidad.unidadLapso}` || "Lapso no disponible",
         }));
-
+        setActividades(response.data.actividades);  // 🔹 Guardamos las actividades
         setOportunidades(oportunidadesConLapso);
         setFilteredData(oportunidadesConLapso);
         setLoading(false);
@@ -151,7 +153,10 @@ const InformeProyecto = () => {
     });
       
     
-
+    const formatFechaHora = (fecha) => {
+      return format(new Date(fecha), 'yyyy-MM-dd/HH:mm');
+    };
+    
   const columnas = [
     {
       title: "Fecha Actualización",
@@ -172,7 +177,7 @@ const InformeProyecto = () => {
     },    
     
     {
-      title: "Fecha Inicio",
+      title: "Fecha Cierre Probable",
       dataIndex: "fechaInicio",
       key: "fechaInicio",
       //...getColumnSearchProps("fechaInicio","fechaInicio"),
@@ -211,13 +216,13 @@ const InformeProyecto = () => {
       title: "Responsable Comercial",
       dataIndex: "respComercial",
       key: "respComercial",
-      render: (respComercial) => respComercial?.respComercial || "No disponible",
+      render: (respComercial) => respComercial ? respComercial.nombreCompleto : "No disponible",
     },
     {
       title: "Responsable Técnico",
       dataIndex: "respTecnico",
       key: "respTecnico",
-      render: (respTecnico) => respTecnico?.respTecnico || "No disponible",
+      render: (respTecnico) => respTecnico ? respTecnico.nombreCompleto : "No disponible",
     },
     {
       title: "Probabilidad de Venta",
@@ -225,18 +230,35 @@ const InformeProyecto = () => {
       key: "probabilidadVenta",
       render: (prob) => prob ?? "No disponible",
     },
-    {
+   /* {
       title: "Lapso de Ejecución",
       dataIndex: "lapsoEjecucion",
       key: "lapsoEjecucion",
       render: (lapso) => lapso || "No disponible",
-    },
+    },*/
     {
       title: "Observaciones",
       dataIndex: "observaciones",
       key: "observaciones",
       render: (obs) => obs || "No disponible",
     },
+    {
+      title: "Actividad",
+      dataIndex: "actividad",
+      key: "actividad",
+      render: (_, record) => {
+        const actividad = actividades.find(act => act.actualizacionId === record._id);
+        return actividad ? (
+          <div>
+            <strong>{actividad.descripcionActividad}</strong>
+            <br />
+            🕒 {formatFechaHora(actividad.horaInicio)} - {formatFechaHora(actividad.horaFin)}
+          </div>
+        ) : "Sin actividad";  // 🔹 Si no hay actividad, muestra "Sin actividad"
+      }
+    }
+    
+    
   ];
   const handleDownloadPDF = () => {
     const doc = new jsPDF({ orientation: "landscape" }); // Cambiar orientación a horizontal
@@ -262,11 +284,14 @@ const InformeProyecto = () => {
           "Responsable Comercial",
           "Responsable Técnico",
           "Probabilidad de Venta",
-          "Lapso de Ejecución",
-          "Observaciones"
+          "Observaciones",
+          "Actividad"
+          
         ]
       ],
-      body: oportunidades.map((oportunidad) => [
+      body: oportunidades.map((oportunidad) => {
+        const actividad = actividades.find(act => act.actualizacionId === oportunidad._id);
+        return [
         new Date(oportunidad.createdAt).toLocaleDateString("es-ES") || "No disponible", // Fecha Actualización
         new Date(oportunidad.fechaInicio).toLocaleDateString("es-ES", {
           year: "numeric",
@@ -274,23 +299,25 @@ const InformeProyecto = () => {
         }) || "No disponible", // Fecha Inicio
         oportunidad.faseVenta.faseVenta || "No disponible", // Fase de Venta
         oportunidad.montoEstimado || "No disponible", // Monto Estimado
-        oportunidad.respComercial.respComercial || "No disponible", // Responsable Comercial
-        oportunidad.respTecnico.respTecnico || "No disponible", // Responsable Técnico
+        oportunidad.respComercial.nombreCompleto || "No disponible", // Responsable Comercial
+        oportunidad.respTecnico.nombreCompleto || "No disponible", // Responsable Técnico
         oportunidad.probabilidadVenta || "No disponible", // Probabilidad de Venta
-        `${oportunidad.cantidadLapso || "No disponible"} ${oportunidad.unidadLapso || ""}` || "No disponible", // Lapso de Ejecución
+        /*`${oportunidad.cantidadLapso || "No disponible"} ${oportunidad.unidadLapso || ""}` || "No disponible", // Lapso de Ejecución*/
         oportunidad.observaciones || "No disponible", // Observaciones
-      ]),
+        actividad ? `${actividad.descripcionActividad} (${format(new Date(actividad.horaInicio), "yyyy-MM-dd/HH:mm")} - ${format(new Date(actividad.horaFin), "yyyy-MM-dd/HH:mm")})` : "Sin actividad"
+      ]}),
       theme: "striped", // Agregar un tema para la tabla
       columnStyles: {
         0: { cellWidth: 30 }, // Ajustar ancho de columnas
         1: { cellWidth: 20 },
         2: { cellWidth: 30 },
         3: { cellWidth: 20 },
-        4: { cellWidth: 40 },
-        5: { cellWidth: 40 },
+        4: { cellWidth: 35 },
+        5: { cellWidth: 35},
         6: { cellWidth: 25 },
-        7: { cellWidth: 20 },
-        8: { cellWidth: 40 }, // Columna Observaciones más ancha
+       /* 7: { cellWidth: 20 },*/
+        7: { cellWidth: 40 }, // Columna Observaciones más ancha
+        8: {cellWidth: 35}
       },
       tableWidth: "auto", // Ajustar automáticamente el tamaño de la tabla
       margin: { top: 40, left: 10, right: 10, bottom: 20 }, // Márgenes ajustados

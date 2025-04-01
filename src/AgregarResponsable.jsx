@@ -105,8 +105,6 @@ function Responsable() {
                                     onChange={(event, value) => {
                                         field.onChange(value);
                                         setRolesSeleccionados(value);
-
-                                        // Si se elimina "jefeArea", limpiar las áreas seleccionadas
                                         if (!value.some(role => role.value === "jefeArea")) {
                                             setAreasSeleccionadas([]);
                                         }
