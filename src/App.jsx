@@ -12,9 +12,10 @@ import CambioPwd from "./CambioPwd";
 import Responsable from "./AgregarResponsable";
 import ListResponsables from "./Responsables"
 import OlvideContra from "./OlvideContrasenia";
-import ListaClientes from "./Clientes";
-import AddCliente from "./AgregarCliente";
-import Calendario from "./Calendario";
+import ListaClientes from "./Clientes"
+import AddCliente from "./AgregarCliente"
+import OportunidadesRes from "./OportunidadesRes";
+import NotificarOportunidad from "./NotificarOportunidad";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -77,16 +78,19 @@ function App() {
                             <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
                             <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
                             <Route path="/forecast" element={<Proyeccion />} />
-                            <Route path="/cambio-contrasenia" element={<CambioPwd />} />
+                            <Route path="/cambio-contrasenia" element={<CambioPwd onLogout={handleLogout}/> }/>
                             <Route path="/responsables" element={<ListResponsables />} />
                             <Route path="/clientes" element={<ListaClientes />} />
                             <Route path="/agregar-responsable" element={<Responsable />} />
                             <Route path="/agregar-cliente" element={<AddCliente />} />
-                            <Route path="/calendario" element={<Calendario />} />
+                            <Route path="/actualizar-oportunidades-res" element={<OportunidadesRes />} />
+                            <Route path="/notificar-oportunidad" element={<NotificarOportunidad />} />
+                            <Route path="/login" element={<Login />} />
                         </>
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />
                     )}
+
                 </Routes>
             </div>
         </Router>

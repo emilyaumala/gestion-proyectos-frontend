@@ -105,8 +105,6 @@ function Responsable() {
                                     onChange={(event, value) => {
                                         field.onChange(value);
                                         setRolesSeleccionados(value);
-
-                                        // Si se elimina "jefeArea", limpiar las áreas seleccionadas
                                         if (!value.some(role => role.value === "jefeArea")) {
                                             setAreasSeleccionadas([]);
                                         }
@@ -134,7 +132,6 @@ function Responsable() {
                         <Controller
                             name="telefono"
                             control={control}
-                            rules={{ required: true }}
                             render={({ field }) => (
                                 <PhoneInput
                                     international
@@ -152,6 +149,12 @@ function Responsable() {
 
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Guardar Responsable
+                    </Button>
+                    <Button
+                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        onClick={() => window.location.href = `/`}
+                    >
+                        Regresar
                     </Button>
                 </Box>
             </Container>

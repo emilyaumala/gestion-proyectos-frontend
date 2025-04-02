@@ -1,13 +1,18 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { TextField, Button, MenuItem, Container, Typography, Box, Alert, Autocomplete } from "@mui/material";
+import { TextField, Button, MenuItem, Container, Typography, Box, Alert, Autocomplete, FormControl } from "@mui/material";
 import axios from "axios";
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { NumericFormat } from "react-number-format";
 
 const API_URL = "https://crm.constecoin.com/apicrm/";
 
 function Formulario() {
-    const { register, handleSubmit, reset, setValue, watch } = useForm();
+    const { register, handleSubmit, reset, setValue, watch, control, formState: { errors }, } = useForm();
+    const correoContacto = watch("correoContacto");
+    const numeroContacto = watch("numeroContacto");
     const [error, setError] = useState(null);
     const [clienteError, setClienteError] = useState("");
     const [areaError, setAreaError] = useState("");
@@ -51,7 +56,7 @@ function Formulario() {
                 setResponsables(responsablesRes.data);
                 //setResponsablesComerciales(respComercialRes.data);
                 //setResponsablesTecnicos(respTecnicoRes.data);
-                setProyectosExistentes(proyectosRes.data);  
+                setProyectosExistentes(proyectosRes.data);
             } catch (error) {
                 console.error("❌ Error al obtener datos:", error);
                 setError("Hubo un problema al cargar los datos.");
@@ -67,21 +72,21 @@ function Formulario() {
             return;
         }
 
-      //  const codigoExiste = proyectosExistentes.some(
-      //      (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
-     //   );
+        //  const codigoExiste = proyectosExistentes.some(
+        //      (proyecto) => proyecto.codigoProyecto.toLowerCase() === data.codigoProyecto.toLowerCase()
+        //   );
 
-      //  if (codigoExiste) {
-       //     alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
-      //      return;
-     //   }
+        //  if (codigoExiste) {
+        //     alert("⚠️ Ya existe un proyecto con ese código. Por favor, verifica el código del proyecto.");
+        //      return;
+        //   }
 
         const formattedData = {
             cliente: data.cliente,
             nombreProyecto: data.nombreProyecto,
-            codigoProyecto: data.codigoProyecto,
+            codigoProyecto: data.codigoProyecto || "No existe codigo del poryecto",
             area: data.area,
-            montoEstimado: parseFloat(data.montoEstimado) || 0,
+            montoEstimado: data.montoEstimado ? parseFloat(data.montoEstimado) : null,  // Evita 0 si es vacío
             faseVenta: data.faseVenta,
             probabilidadVenta: data.probabilidadVenta,
             fechaInicio: data.fechaInicio,
@@ -170,6 +175,7 @@ function Formulario() {
 
         setValue("respTecnico", value || "");
     };
+
     return (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", backgroundColor: "#f9f9f9", padding: "20px" }}>
             <Container maxWidth="sm">
@@ -197,17 +203,44 @@ function Formulario() {
                                 setValue("cliente", value.id);
                                 setClienteError("");
                             } else {
-                                setClienteError("Selecciona un cliente válido de la lista o agrégalo correctamente.");
+                                setClienteError("Selecciona un cliente válido o pidele  al administrador que lo agregue.");
                             }
                         }}
                     />
                     {/* Nombre del Contacto */}
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
-                    {/* Nombre del Contacto */}
-                    <TextField fullWidth label="Correo Electrónico del Contacto" {...register("correoContacto", { required: false })} margin="normal" />
-                    {/* Número del Contacto */}
-                    <TextField fullWidth label="Número del Contacto" type="number" {...register("numeroContacto", { required: false })} margin="normal" /> 
-                    <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
+
+
+<TextField
+    fullWidth
+    label="Correo Electrónico del Contacto"
+    {...register("correoContacto", {
+        required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
+    })}
+    margin="normal"
+    error={Boolean(errors.correoContacto)}
+    helperText={errors.correoContacto?.message}
+/>
+
+<FormControl fullWidth sx={{ mt: 2 }}>
+    <Controller
+        name="numeroContacto"
+        control={control}
+        rules={{
+            required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
+        }}
+        render={({ field }) => (
+            <PhoneInput
+                international
+                defaultCountry="EC"
+                {...field}
+                onChange={(value) => field.onChange(value)}
+                style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+            />
+        )}
+    />
+    {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
+</FormControl>
 
 
                     {/* Area */}
@@ -238,48 +271,54 @@ function Formulario() {
 
                     {/* Nombre del Proyecto */}
                     <TextField fullWidth label="Nombre del Proyecto" {...register("nombreProyecto", { required: true })} margin="normal" />
-                    {/* Código Oportunidad */}  
+                    {/* Código Oportunidad */}
                     <TextField fullWidth label="Código de Oportunidad AS2 (Opocional)" {...register("codigoProyecto")} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
                     {/* Fase de Venta */}
                     {faseVentaError && <Alert severity="error" sx={{ mb: 2 }}>{faseVentaError}</Alert>}
                     <Box>
-                    <Autocomplete
-                        freeSolo
-                        options={fasesVenta.map(faseVenta => ({ label: faseVenta.faseVenta, id: faseVenta._id }))}
-                        onInputChange={(event3, newValue) => setValue("faseVenta", newValue)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Fase de Venta"
-                                margin="normal"
-                                error={Boolean(faseVentaError)}
-                                helperText={faseVentaError}
-                            />
-                        )}
-                        onChange={(event3, value) => {
-                            if (value && value.id) {
-                                setValue("faseVenta", value.id);
-                                setFaseVentaError("");
-                            } else {
-                                setFaseVentaError("Selecciona una fase de venta válida de la lista o agrégalo correctamente.");
-                            }
-                        }}
-                    />
+                        <Autocomplete
+                            freeSolo
+                            options={fasesVenta.map(faseVenta => ({ label: faseVenta.faseVenta, id: faseVenta._id }))}
+                            onInputChange={(event3, newValue) => setValue("faseVenta", newValue)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Fase de Venta"
+                                    margin="normal"
+                                    error={Boolean(faseVentaError)}
+                                    helperText={faseVentaError}
+                                />
+                            )}
+                            onChange={(event3, value) => {
+                                if (value && value.id) {
+                                    setValue("faseVenta", value.id);
+                                    setFaseVentaError("");
+                                } else {
+                                    setFaseVentaError("Selecciona una fase de venta válida de la lista o agrégalo correctamente.");
+                                }
+                            }}
+                        />
                     </Box>
                     {/* Monto Estimado */}
-                    <TextField
-                        fullWidth
-                        label="Monto Estimado (USD)"
-                        type="number"
-                        inputMode="decimal"
-                        step="0.01"
-                        {...register("montoEstimado", {
-                            required: true,
-                            min: 0,
-                            valueAsNumber: true
-                        })}
-                        margin="normal"
-                        InputProps={{ startAdornment: <span>$ </span> }} // Muestra el símbolo de dólar
+                    <Controller
+                        name="montoEstimado"
+                        control={control}
+                        rules={{ min: 0 }}
+                        render={({ field: { onChange, value } }) => (
+                            <NumericFormat
+                                value={value}
+                                thousandSeparator=","
+                                decimalSeparator="."
+                                decimalScale={2}
+                                allowNegative={false}
+                                prefix="$ "
+                                customInput={TextField}
+                                fullWidth
+                                label="Monto Estimado (USD)"
+                                margin="normal"
+                                onValueChange={(values) => onChange(values.floatValue)} // Solo envía el número
+                            />
+                        )}
                     />
 
                     {/* Probabilidad de Venta */}
@@ -384,6 +423,12 @@ function Formulario() {
 
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Guardar Oportunidad
+                    </Button>
+                    <Button
+                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                        onClick={() => window.location.href = `/`}
+                    >
+                        Regresar
                     </Button>
                 </Box>
             </Container>

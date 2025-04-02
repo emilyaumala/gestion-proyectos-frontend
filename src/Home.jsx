@@ -35,22 +35,23 @@ function Home({ onLogout }) {
             </>
 
           )}
-          {roles.includes("responsable") && (
-            <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades")}>
-              📋 Actualizar Oportunidad
-            </button>
-          )}
-          {roles.includes("admin") && (
-            <button style={styles.button} >
-              🔔 Notificar Oportunidad
-            </button>
-          )}
+          {roles.includes("admin") &&(
+          <button style={styles.button} onClick={() => navigate("/notificar-oportunidad")}>
+          📋 Notificar Oportunidad
+        </button>)}
+        {roles.includes("responsable") &&(
+          <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
+          📋 Actualizar Oportunidad
+        </button>
+        )}
+                {roles.includes("admin") &&(
+          <button style={styles.button} onClick={() => navigate("/actualizar-oportunidades-res")}>
+          📋 Actualizar Oportunidad
+        </button>
+        )}
 
           <button style={styles.button} onClick={() => navigate("/proyectos")}>
             📜 Ver Oportunidades
-          </button>
-          <button style={styles.button} onClick={() => navigate("/forecast")}>
-            📊 Proyección
           </button>
         </div>
 
@@ -70,8 +71,8 @@ function Home({ onLogout }) {
           )}
 
           {/* Mostrar el botón "Cambio contraseña" para todos los usuarios */}
-          <button style={styles.button} onClick={() => navigate("/calendario")}>
-            📅 Eventos
+          <button style={styles.button} onClick={() => navigate("/forecast")}>
+            📊 Proyección
           </button>
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
