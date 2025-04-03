@@ -10,12 +10,13 @@ import InformeProyecto from "./InformeProyecto";
 import Proyeccion from "./Proyeccion";
 import CambioPwd from "./CambioPwd";
 import Responsable from "./AgregarResponsable";
-import ListResponsables from "./Responsables"
+import ListResponsables from "./Responsables";
 import OlvideContra from "./OlvideContrasenia";
-import ListaClientes from "./Clientes"
-import AddCliente from "./AgregarCliente"
+import ListaClientes from "./Clientes";
+import AddCliente from "./AgregarCliente";
 import OportunidadesRes from "./OportunidadesRes";
 import NotificarOportunidad from "./NotificarOportunidad";
+import CalendarPage from "./Calendario";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -64,9 +65,9 @@ function App() {
         <Router>
             <div style={styles.globalStyles}>
                 <Routes>
-                    <Route 
-                        path="/login" 
-                        element={!isLoggedIn ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} 
+                    <Route
+                        path="/login"
+                        element={!isLoggedIn ? <Login onLogin={handleLogin} /> : <Navigate to="/" />}
                     />
                     <Route path="/olvide-contrasenia" element={<OlvideContra />} />
 
@@ -78,19 +79,18 @@ function App() {
                             <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
                             <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
                             <Route path="/forecast" element={<Proyeccion />} />
-                            <Route path="/cambio-contrasenia" element={<CambioPwd onLogout={handleLogout}/> }/>
+                            <Route path="/cambio-contrasenia" element={<CambioPwd onLogout={handleLogout} />} />
                             <Route path="/responsables" element={<ListResponsables />} />
                             <Route path="/clientes" element={<ListaClientes />} />
                             <Route path="/agregar-responsable" element={<Responsable />} />
                             <Route path="/agregar-cliente" element={<AddCliente />} />
                             <Route path="/actualizar-oportunidades-res" element={<OportunidadesRes />} />
                             <Route path="/notificar-oportunidad" element={<NotificarOportunidad />} />
-                            <Route path="/login" element={<Login />} />
+                            <Route path="/calendario" element={<CalendarPage />} />
                         </>
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />
                     )}
-
                 </Routes>
             </div>
         </Router>

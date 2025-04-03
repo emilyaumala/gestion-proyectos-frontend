@@ -108,7 +108,7 @@ const Proyeccion = () => {
       key: "cliente",
     },
     {
-      title: "Fecha Inicio",
+      title: "Fecha Cierre Probable",
       dataIndex: "fechaInicio",
       key: "fechaInicio",
       render: (text) => {
