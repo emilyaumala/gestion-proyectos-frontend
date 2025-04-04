@@ -43,7 +43,7 @@ function Oportunidades() {
   const [showActivityFields, setShowActivityFields] = useState(false); // Controla la visibilidad de los campos de actividad
   const [tituloActividad, setTituloActividad] = useState("");
   const [descripcionActividad, setDescripcionActividad] = useState(""); // Descripción de la actividad
-  const [colaboradorActividad, setColaboradorActividad] = useState("");
+  const [colaboradorActividad, setColaboradorActividad] = useState([]);
   const [horaInicio, setHoraInicio] = useState(""); // Hora de inicio
   const [horaFin, setHoraFin] = useState(""); // Hora de fin
   // Obtener usuario y roles de localStorage de manera segura
@@ -184,8 +184,11 @@ function Oportunidades() {
       observaciones: observaciones || "Sin observaciones",
       tituloActividad,
       descripcionActividad,
-      colaboradoresActividad,
-      horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+      colaboradorActividad: colaboradorActividad.map(colaborador => ({
+        nombre: colaborador.nombreCompleto,
+        correo: colaborador.correo
+    })),
+          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
       horaFin: horaFin,    // Recibimos la fecha y hora de fin combinadas
       nombreContacto: nombreContacto,
       numeroContacto: numeroContacto,
@@ -476,34 +479,6 @@ function Oportunidades() {
                 <TextField fullWidth value={numeroContacto} disabled />
               )}
             </Box>
-            {/* Cantidad Lapso 
-                      <Box>
-                        <Typography fontWeight="bold">Cantidad Lapso:</Typography>
-                        <TextField
-                          fullWidth
-                          value={cantidadLapso}
-                          disabled={!editable}
-                          onChange={(e) => setCantidadLapso(e.target.value)}
-                        />
-                      </Box>
-          
-                      {/* Unidad Lapso 
-                      <Box>
-                        <Typography fontWeight="bold">Unidad Lapso:</Typography>
-                        <TextField
-                          fullWidth
-                          select
-                          value={unidadLapso}
-                          disabled={!editable}
-                          onChange={(e) => setUnidadLapso(e.target.value)}
-                        >
-                          <MenuItem value="días">Día(s)</MenuItem>
-                          <MenuItem value="meses">Mes(es)</MenuItem>
-                          <MenuItem value="años">Año(s)</MenuItem>
-                        </TextField>
-                      </Box>*/}
-
-
 
             {/* Observaciones */}
             <Box>
@@ -541,7 +516,6 @@ function Oportunidades() {
               <TextField
                 fullWidth
                 value={tituloActividad}
-                disabled={!editable}
                 onChange={(e) => setTituloActividad(e.target.value)}
               />
             </Box>
@@ -559,13 +533,11 @@ function Oportunidades() {
               <Autocomplete
                 multiple
                 fullWidth
-                options={Array.isArray(colaboradoresActividad) ? colaboradoresActividad : []} // Evita errores si es undefined
-                getOptionLabel={(option) => option?.nombreCompleto || "Desconocido"} // Evita errores si option es undefined
-                value={Array.isArray(colaboradorActividad) ? colaboradorActividad : []} // Asegura que siempre sea un array
-                onChange={(e, newValue) => setColaboradorActividad(newValue || [])} // Si newValue es null, usa []
-                renderInput={(params) => (
-                  <TextField {...params} placeholder="Seleccionar Colaboradores" />
-                )}
+                options={colaboradoresActividad}
+                getOptionLabel={(option) => option.nombreCompleto}
+                value={colaboradorActividad}
+                onChange={(event, newValue) => setColaboradorActividad(newValue)}
+                renderInput={(params) => <TextField {...params} label="Seleccionar Colaboradores" />}
               />
             </Box>
 
