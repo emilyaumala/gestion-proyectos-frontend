@@ -42,6 +42,7 @@ const Proyeccion = () => {
     return `${mes} ${new Date(mesAnio).getFullYear()}`;
   };
 
+  // Ordena los datos por año y mes
   const mesesTableData = proyectos.reduce((acc, proyecto) => {
     proyecto.forecastMensual.forEach((forecast, index) => {
       const mesAnio = obtenerMesAnio(index, proyecto.fechaInicio);
@@ -60,6 +61,28 @@ const Proyeccion = () => {
     });
     return acc;
   }, []);
+
+  // Ordenamos los datos por año y mes
+  mesesTableData.sort((a, b) => {
+    const anioA = parseInt(a.mes.split(" ")[1], 10);
+    const anioB = parseInt(b.mes.split(" ")[1], 10);
+    const mesA = a.mes.split(" ")[0];
+    const mesB = b.mes.split(" ")[0];
+
+    const meses = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
+    // Comparar por año primero
+    if (anioA !== anioB) {
+      return anioA - anioB;
+    }
+
+    // Si los años son iguales, comparar por mes
+    return meses.indexOf(mesA) - meses.indexOf(mesB);
+  });
+
 
   // 🎯 Preparar datos del gráfico
   const chartData = {
@@ -203,66 +226,65 @@ const Proyeccion = () => {
         <h3 style={styles.sectionTitle}>Gráfico de Forecast Mensual vs Acumulado</h3>
         <Bar data={chartData} options={chartOptions} />
       </div>
-      
     </div>
-      
-    
+
+
   );
-  
+
 };
 
-  
-  const styles = {
-    container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",       // Centra todo el contenido horizontalmente
-      justifyContent: "flex-start",
-      minHeight: "100vh",
-      width: "auto",
-      backgroundColor: "#f4f4f4",
-      padding: "5vw",            // Uso de unidades relativas
-      boxSizing: "border-box",
-    },
-    title: {
-      fontSize: "3vw",           // Uso de unidades relativas
-      fontWeight: "bold",
-      color: "#333",
-      marginBottom: "2vw",       // Margen relativo
-      textAlign: "center",       // Centra el título principal
-    },
-    responsiveBox: {
-      width: "100%",
-      maxWidth: "95%",           // Se ajusta al 95% del ancho de la pantalla
-      marginBottom: "3vw",       // Margen relativo
-      backgroundColor: "#fff",
-      padding: "4vw",            // Uso de unidades relativas
-      borderRadius: "1vw",       // Bordes redondeados con tamaño relativo
-      boxShadow: "0 0.5vw 1vw rgba(0, 0, 0, 0.1)",  // Sombra con tamaños relativos
-      boxSizing: "border-box",
-    },
-    sectionTitle: {
-      color: "#333333",
-      marginBottom: "1vw",       // Margen relativo
-      fontSize: "2vw",           // Fuente con tamaño relativo
-      textAlign: "center",       // Centra todos los títulos de las secciones
-    },
-    scrollWrapper: {
-      width: "100%",
-      overflowX: "auto",    // Habilita scroll horizontal
-      //overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
-      
-    },
-    chartWrapper: {
-      display: "flex",              // Usamos flexbox para centrar el gráfico
-      flexDirection: "column",
-      alignItems: "center",         // Centra el gráfico horizontalmente
-      justifyContent: "center",     // Centra el gráfico verticalmente
-      width: "100%",
-      minHeight: "30vw",            // Ajuste dinámico para gráficos
-      marginBottom: "3vw",          // Margen relativo
-    },
-  };
-  
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",       // Centra todo el contenido horizontalmente
+    justifyContent: "flex-start",
+    minHeight: "100vh",
+    width: "auto",
+    backgroundColor: "#f4f4f4",
+    padding: "5vw",            // Uso de unidades relativas
+    boxSizing: "border-box",
+  },
+  title: {
+    fontSize: "3vw",           // Uso de unidades relativas
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "2vw",       // Margen relativo
+    textAlign: "center",       // Centra el título principal
+  },
+  responsiveBox: {
+    width: "100%",
+    maxWidth: "95%",           // Se ajusta al 95% del ancho de la pantalla
+    marginBottom: "3vw",       // Margen relativo
+    backgroundColor: "#fff",
+    padding: "4vw",            // Uso de unidades relativas
+    borderRadius: "1vw",       // Bordes redondeados con tamaño relativo
+    boxShadow: "0 0.5vw 1vw rgba(0, 0, 0, 0.1)",  // Sombra con tamaños relativos
+    boxSizing: "border-box",
+  },
+  sectionTitle: {
+    color: "#333333",
+    marginBottom: "1vw",       // Margen relativo
+    fontSize: "2vw",           // Fuente con tamaño relativo
+    textAlign: "center",       // Centra todos los títulos de las secciones
+  },
+  scrollWrapper: {
+    width: "100%",
+    overflowX: "auto",    // Habilita scroll horizontal
+    //overflowY: "auto",    // Scroll solo si la tabla es más ancha que el contenedor
+
+  },
+  chartWrapper: {
+    display: "flex",              // Usamos flexbox para centrar el gráfico
+    flexDirection: "column",
+    alignItems: "center",         // Centra el gráfico horizontalmente
+    justifyContent: "center",     // Centra el gráfico verticalmente
+    width: "100%",
+    minHeight: "30vw",            // Ajuste dinámico para gráficos
+    marginBottom: "3vw",          // Margen relativo
+  },
+};
+
 
 export default Proyeccion;
