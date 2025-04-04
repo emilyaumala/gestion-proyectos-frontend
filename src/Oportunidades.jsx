@@ -201,8 +201,8 @@ function Oportunidades() {
       colaboradorActividad: colaboradorActividad.map(colaborador => ({
         nombre: colaborador.nombreCompleto,
         correo: colaborador.correo
-      })),
-      horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+    })),
+          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
       horaFin: horaFin,    // Recibimos la fecha y hora de fin combinadas
       nombreContacto: nombreContacto,
       numeroContacto: numeroContacto,
@@ -591,11 +591,13 @@ function Oportunidades() {
               <Autocomplete
                 multiple
                 fullWidth
-                options={colaboradoresActividad}
-                getOptionLabel={(option) => option.nombreCompleto}
-                value={colaboradorActividad}
-                onChange={(event, newValue) => setColaboradorActividad(newValue)}
-                renderInput={(params) => <TextField {...params} label="Seleccionar Colaboradores" />}
+                options={Array.isArray(colaboradoresActividad) ? colaboradoresActividad : []} // Evita errores si es undefined
+                getOptionLabel={(option) => option?.nombreCompleto || "Desconocido"} // Evita errores si option es undefined
+                value={Array.isArray(colaboradorActividad) ? colaboradorActividad : []} // Asegura que siempre sea un array
+                onChange={(e, newValue) => setColaboradorActividad(newValue || [])} // Si newValue es null, usa []
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Seleccionar Colaboradores" />
+                )}
               />
             </Box>
 
