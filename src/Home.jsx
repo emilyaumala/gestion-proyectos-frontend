@@ -1,8 +1,10 @@
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Home({ onLogout }) {
   const navigate = useNavigate();
-
+  const [error, setError] = useState("")
   // Obtener el usuario del localStorage de manera segura
   const user = localStorage.getItem("user");
 
@@ -16,6 +18,10 @@ function Home({ onLogout }) {
       console.error("Error al parsear el objeto 'user' desde localStorage:", error);
     }
   }
+
+  const handleClick = (route ) => {
+    window.location.href = `https://crm.constecoin.com/apicrm/auth/outlook?redirect=${route}`
+  };
 
   return (
     <div style={styles.container}>
@@ -74,9 +80,10 @@ function Home({ onLogout }) {
           <button style={styles.button} onClick={() => navigate("/forecast")}>
             📊 Proyección
           </button>
-          <button style={styles.button} onClick={() => navigate("/calendario")}>
+          <button style={styles.button} onClick={() => handleClick('calendario')}>
             📅 Calendario
           </button>
+          {error && <p>{error}</p>}
           <button style={styles.button} onClick={() => navigate("/cambio-contrasenia")}>
             🔒 Cambio contraseña
           </button>
