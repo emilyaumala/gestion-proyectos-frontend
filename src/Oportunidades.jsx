@@ -1,8 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { TextField, Button, Box, Typography, Alert, MenuItem, Autocomplete } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
+import PhoneInput from "react-phone-number-input";
+
 
 const API_URL = "https://crm.constecoin.com/apicrm";
 
@@ -25,17 +28,24 @@ function Oportunidades() {
   const [respComercial, setRespComercial] = useState(null);
   const [respTecnico, setRespTecnico] = useState(null);
   const [probabilidadVenta, setProbabilidadVenta] = useState(null);
+  const [nombreContacto, setNombreContacto] = useState("");
+  const [correoContacto, setCorreoContacto] = useState("");
+  const [numeroContacto, setNumeroContacto] = useState("");
 
   const [fasesVentaList, setFasesVentaList] = useState([]);
   const [probabilidadesVentaList, setProbabilidadesVentaList] = useState([]);
   const [responsablesComerciales, setResponsablesComerciales] = useState([]);
   const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
+  const [colaboradoresActividad, setColaboradoresActividad] = useState([]);
   const [responsables, setResponsables] = useState([]);
   const navigate = useNavigate();
 
-  const [showActivityFields, setShowActivityFields] = useState(false); // Controla la visibilidad de los campos de actividad
   const [token, setToken] = useState(localStorage.getItem("outlookToken"));
+
+  const [showActivityFields, setShowActivityFields] = useState(false); // Controla la visibilidad de los campos de actividad
+  const [tituloActividad, setTituloActividad] = useState("");
   const [descripcionActividad, setDescripcionActividad] = useState(""); // Descripción de la actividad
+  const [colaboradorActividad, setColaboradorActividad] = useState("");
   const [horaInicio, setHoraInicio] = useState(""); // Hora de inicio
   const [horaFin, setHoraFin] = useState(""); // Hora de fin
   // Obtener usuario y roles de localStorage de manera segura
@@ -71,14 +81,16 @@ function Oportunidades() {
         const proyectosRes = await axios.get(`${API_URL}/proyectos`);
         setProyectos(proyectosRes.data);
 
+
         const areasRes = await axios.get(`${API_URL}/areas`);
         setAreas(areasRes.data);
 
         const probabilidadesRes = await axios.get(`${API_URL}/probabilidad-venta`);
         setProbabilidadesVentaList(probabilidadesRes.data);
 
-        const [fasesRes, comercialesRes, tecnicosRes] = await Promise.all([
+        const [fasesRes, comercialesRes, tecnicosRes, colaboradoresRes] = await Promise.all([
           axios.get(`${API_URL}/fasesVenta`),
+          axios.get(`${API_URL}/responsables`),
           axios.get(`${API_URL}/responsables`),
           axios.get(`${API_URL}/responsables`),
         ]);
@@ -86,6 +98,7 @@ function Oportunidades() {
         setFasesVentaList(fasesRes.data);
         setResponsablesComerciales(comercialesRes.data);
         setResponsablesTecnicos(tecnicosRes.data);
+        setColaboradoresActividad(colaboradoresRes.data)
       } catch (error) {
         console.error("❌ Error al obtener datos:", error);
         setError("Hubo un problema al cargar los datos.");
@@ -104,8 +117,8 @@ function Oportunidades() {
     const [year, month] = dateString.split("T")[0].split("-");
     return `${year}-${month}`;
   };
-  const handleToggleActivity = async () => {
-      setShowActivityFields(!showActivityFields);
+  const handleToggleActivity = () => {
+    setShowActivityFields(!showActivityFields); // Muestra/oculta los campos de actividad
   };
 
   useEffect(() => {
@@ -152,6 +165,9 @@ function Oportunidades() {
         setOportunidad(data);
         setFaseVenta(data.faseVenta);
         //setCodigoProyecto(data.codigoProyecto);
+        setNombreContacto(data.nombreContacto);
+        setCorreoContacto(data.correoContacto);
+        setNumeroContacto(data.numeroContacto);
         setMontoEstimado(data.montoEstimado);
         setFechaInicio(formatDateToMonthYear(data.fechaInicio));
         setRespComercial(data.respComercial);
@@ -180,17 +196,21 @@ function Oportunidades() {
       respTecnico,
       probabilidadVenta,
       observaciones: observaciones || "Sin observaciones",
+      tituloActividad,
       descripcionActividad,
+      colaboradoresActividad,
       horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
       horaFin: horaFin,    // Recibimos la fecha y hora de fin combinadas
+      nombreContacto: nombreContacto,
+      numeroContacto: numeroContacto,
+      correoContacto: correoContacto,
       nombreUsuario: nombreCompleto
     };
 
     try {
       const response = await axios.post(`${API_URL}/guardar1`, formattedData);
-      const formattedDataString = encodeURIComponent(JSON.stringify(formattedData))
+       const formattedDataString = encodeURIComponent(JSON.stringify(formattedData))
       window.location.href = `https://crm.constecoin.com/apicrm/auth/outlook?redirect=${route}&data=${formattedDataString}`
-      
       alert("Actualización guardada exitosamente");
       navigate("/actualizar-oportunidades");
       setError(null);
@@ -304,6 +324,9 @@ function Oportunidades() {
                     fechaInicio,
                     respComercial,
                     respTecnico,
+                    nombreContacto,
+                    numeroContacto,
+                    correoContacto,
                     //cantidadLapso,
                     //unidadLapso,
                     probabilidadVenta,
@@ -412,7 +435,63 @@ function Oportunidades() {
                 <TextField fullWidth value={oportunidad.respTecnico.nombreCompleto} disabled />
               )}
             </Box>
+            {/* Probabilidad de Venta */}
+            <Box>
+              <Typography fontWeight="bold">Probabilidad de Venta:</Typography>
+              {editable ? (
+                <Autocomplete
+                  fullWidth
+                  options={probabilidadesVentaList}
+                  value={probabilidadVenta}
+                  onChange={(e, newValue) => setProbabilidadVenta(newValue)}
+                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Probabilidad" />}
+                />
+              ) : (
+                <TextField fullWidth value={oportunidad.probabilidadVenta} disabled />
+              )}
+            </Box>
+            {/* Fecha de Inicio */}
+            <Box>
+              <Typography fontWeight="bold">Nombre Contacto:</Typography>
+              <TextField
+                fullWidth
+                value={nombreContacto}
+                disabled={!editable}
+                onChange={(e) => setNombreContacto(e.target.value)}
+              />
+            </Box>
+            {/* Fecha de Inicio */}
+            <Box>
+              <Typography fontWeight="bold">Correo Contacto:</Typography>
+              <TextField
+                fullWidth
+                value={correoContacto}
+                disabled={!editable}
+                onChange={(e) => setCorreoContacto(e.target.value)}
+              />
+            </Box>
+            {/* Fecha de Inicio */}
+            <Box>
+              <Typography fontWeight="bold">Número de Contacto:</Typography>
 
+              {editable ? (
+                <PhoneInput
+                  international
+                  defaultCountry="EC"
+                  value={numeroContacto}
+                  onChange={setNumeroContacto}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    fontSize: "16px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                />
+              ) : (
+                <TextField fullWidth value={numeroContacto} disabled />
+              )}
+            </Box>
             {/* Cantidad Lapso 
                       <Box>
                         <Typography fontWeight="bold">Cantidad Lapso:</Typography>
@@ -439,109 +518,109 @@ function Oportunidades() {
                           <MenuItem value="años">Año(s)</MenuItem>
                         </TextField>
                       </Box>*/}
-
-            {/* Probabilidad de Venta */}
-            <Box>
-              <Typography fontWeight="bold">Probabilidad de Venta:</Typography>
-              {editable ? (
-                <Autocomplete
-                  fullWidth
-                  options={probabilidadesVentaList}
-                  value={probabilidadVenta}
-                  onChange={(e, newValue) => setProbabilidadVenta(newValue)}
-                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Probabilidad" />}
-                />
-              ) : (
-                <TextField fullWidth value={oportunidad.probabilidadVenta} disabled />
-              )}
-            </Box>
-
-            {/* Observaciones */}
-            <Box>
-              <Typography fontWeight="bold">Observaciones:</Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                value={observaciones}
-                onChange={(e) => setObservaciones(e.target.value)}
-                placeholder="Escribe tus observaciones aquí..."
-              />
-            </Box>
-          </Box>
-        )}
-        {proyectoSeleccionado && (
-          // Botón + Actividad
-          <Box>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleToggleActivity}
-              sx={{ mb: 2 }}
-            >
-              + Actividad
-            </Button>
-          </Box>
-        )}
-
-        {proyectoSeleccionado && showActivityFields && (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography fontWeight="bold">Descripción de la Actividad:</Typography>
-            <TextField
-              fullWidth
-              value={descripcionActividad}
-              onChange={(e) => setDescripcionActividad(e.target.value)}
-              multiline
-              rows={4}
-              placeholder="Descripción de la actividad"
-            />
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography fontWeight="bold">Fecha y Hora de Inicio:</Typography>
+    
+                {/* Probabilidad de Venta */}
+                <Box>
+                  <Typography fontWeight="bold">Probabilidad de Venta:</Typography>
+                  {editable ? (
+                    <Autocomplete
+                      fullWidth
+                      options={probabilidadesVentaList}
+                      value={probabilidadVenta}
+                      onChange={(e, newValue) => setProbabilidadVenta(newValue)}
+                      renderInput={(params) => <TextField {...params} placeholder="Seleccionar Probabilidad" />}
+                    />
+                  ) : (
+                    <TextField fullWidth value={oportunidad.probabilidadVenta} disabled />
+                  )}
+                </Box>
+    
+                {/* Observaciones */}
+                <Box>
+                  <Typography fontWeight="bold">Observaciones:</Typography>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    value={observaciones}
+                    onChange={(e) => setObservaciones(e.target.value)}
+                    placeholder="Escribe tus observaciones aquí..."
+                  />
+                </Box>
+              </Box>
+            )}
+            {proyectoSeleccionado && (
+              // Botón + Actividad
+              <Box>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleToggleActivity}
+                  sx={{ mb: 2 }}
+                >
+                  + Actividad
+                </Button>
+              </Box>
+            )}
+    
+            {proyectoSeleccionado && showActivityFields && (
+              <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+                <Typography fontWeight="bold">Descripción de la Actividad:</Typography>
                 <TextField
                   fullWidth
-                  type="datetime-local" // Combina fecha y hora
-                  value={horaInicio} // Guardamos tanto la fecha como la hora
-                  onChange={(e) => setHoraInicio(e.target.value)} // Actualizamos la fecha y hora de inicio
-                  disabled={!showActivityFields}
+                  value={descripcionActividad}
+                  onChange={(e) => setDescripcionActividad(e.target.value)}
+                  multiline
+                  rows={4}
+                  placeholder="Descripción de la actividad"
                 />
+    
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography fontWeight="bold">Fecha y Hora de Inicio:</Typography>
+                    <TextField
+                      fullWidth
+                      type="datetime-local" // Combina fecha y hora
+                      value={horaInicio} // Guardamos tanto la fecha como la hora
+                      onChange={(e) => setHoraInicio(e.target.value)} // Actualizamos la fecha y hora de inicio
+                      disabled={!showActivityFields}
+                    />
+                  </Box>
+    
+                  <Box sx={{ flex: 1 }}>
+                    <Typography fontWeight="bold">Fecha y Hora de Fin:</Typography>
+                    <TextField
+                      fullWidth
+                      type="datetime-local" // Combina fecha y hora
+                      value={horaFin} // Guardamos tanto la fecha como la hora
+                      onChange={(e) => setHoraFin(e.target.value)} // Actualizamos la fecha y hora de fin
+                      disabled={!showActivityFields}
+                    />
+                  </Box>
+                </Box>
               </Box>
-
-              <Box sx={{ flex: 1 }}>
-                <Typography fontWeight="bold">Fecha y Hora de Fin:</Typography>
-                <TextField
-                  fullWidth
-                  type="datetime-local" // Combina fecha y hora
-                  value={horaFin} // Guardamos tanto la fecha como la hora
-                  onChange={(e) => setHoraFin(e.target.value)} // Actualizamos la fecha y hora de fin
-                  disabled={!showActivityFields}
-                />
+            )}
+    
+    
+    
+            {proyectoSeleccionado && (
+              <Box sx={{ mt: 3, textAlign: "center" }}>
+                <Button variant="contained" color="success" onClick={() => handleEnviar('home')}>
+                  Enviar
+                </Button>
+                <Button
+                  type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
+                  onClick={() => window.location.href = `/`}
+                >
+                  Regresar
+                </Button>
               </Box>
-            </Box>
+            )}
           </Box>
-        )}
-
-
-
-        {proyectoSeleccionado && (
-          <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Button variant="contained" color="success" onClick={() => handleEnviar('home')}>
-              Enviar
-            </Button>
-            <Button
-              type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
-              onClick={() => window.location.href = `/`}
-            >
-              Regresar
-            </Button>
-          </Box>
-        )}
-      </Box>
-
-    </Box>
-  );
-
-}
-
-export default Oportunidades;
+    
+        </Box>
+      );
+    
+    }
+    
+    export default Oportunidades;

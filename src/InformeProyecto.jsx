@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Table, Input, Button, Space, Typography } from "antd";
+import { Table, Input, Button, Space, Typography, Modal, Row, Col } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import { autoTable } from "jspdf-autotable";
@@ -26,6 +26,10 @@ const InformeProyecto = () => {
   const [respTecnico, setRespTecnico] = useState("");
   const [error, setError] = useState(null);
   const [actividades, setActividades] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [nombreContacto, setNombreContacto] = useState("");
+  const [correoContacto, setCorreoContacto] = useState("");
+  const [numeroContacto, setNumeroContacto] = useState("");
 
 
   useEffect(() => {
@@ -41,7 +45,7 @@ const InformeProyecto = () => {
         setMontoEstimado(response.data.montoEstimado || "Monto no disponible");
         setFaseVentaProyecto(response.data.faseVentaProyecto || "Fase no disponible");
         setProbabilidadVenta(response.data.probabilidadVenta || "Prob no disponible");
-        setFechaInicio(response.data.fechaInicio|| "No disponible");
+        setFechaInicio(response.data.fechaInicio || "No disponible");
         setRespComercial(response.data.respComercial || "No disponible");
         setRespTecnico(response.data.respTecnico || "No disponible");
         setObservaciones(response.data.observaciones || "No disponible");
@@ -61,102 +65,113 @@ const InformeProyecto = () => {
         setError("No se pudo cargar la información del proyecto.");
         setLoading(false);
       });
-    }, [id]);
-  
+  }, [id]);
 
-    const getColumnSearchProps = (dataIndex) => ({
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-          <Input
-            autoFocus
-            placeholder={`Buscar ${dataIndex}`}
-            value={selectedKeys[0]}
-            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => confirm()}
-            style={{ width: 188, marginBottom: 8, display: "block" }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => confirm()}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Buscar
-            </Button>
-            <Button
-              onClick={() => clearFilters && clearFilters()}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Resetear
-            </Button>
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered) => (
-        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-      ),
-      onFilter: (value, record) => {
-        // Si el valor es un objeto, usamos la propiedad faseVenta
-        if (typeof record[dataIndex] === 'object') {
-          return record[dataIndex]?.faseVenta?.toLowerCase().includes(value.toLowerCase());
-        }
-        // Si es un string, hacemos la comparación directamente
-        return record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase());
-      },
-      render: (text) => text || "No disponible",
-    });
-    
-    const getColumnSearchProps2 = (dataIndex) => ({
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-      }) => (
-        <div style={{ padding: 8 }}>
-          <Input
-            autoFocus
-            placeholder={`Buscar ${dataIndex}`}
-            value={selectedKeys[0]}
-            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => confirm()}
-            style={{ width: 188, marginBottom: 8, display: "block" }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => confirm()}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Buscar
-            </Button>
-            <Button
-              onClick={() => clearFilters && clearFilters()}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Resetear
-            </Button>
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />,
-      onFilter: (value, record) => {
-        const lapsoTexto = `${record.cantidadLapso} ${record.unidadLapso}`.toLowerCase();
-        return lapsoTexto.includes(value.toLowerCase()); // Filtra correctamente por texto
-      },
-    });
-      
-    
-    const formatFechaHora = (fecha) => {
-      return format(new Date(fecha), 'yyyy-MM-dd/HH:mm');
-    };
-    
+  const fetchClienteDetails = async () => {
+    try {
+      const response = await axios.get(`https://crm.constecoin.com/apicrm/oportunidades/${id}`);
+      const data = response.data;
+      setNombreContacto(data.nombreContacto || "No disponible");
+      setCorreoContacto(data.correoContacto || "No disponible");
+      setNumeroContacto(data.numeroContacto || "No disponible");
+      setModalVisible(true);
+    } catch (error) {
+      console.error("❌ Error al obtener detalles del cliente:", error);
+    }
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          autoFocus
+          placeholder={`Buscar ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => confirm()}
+          style={{ width: 188, marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Buscar
+          </Button>
+          <Button
+            onClick={() => clearFilters && clearFilters()}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Resetear
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, record) => {
+      // Si el valor es un objeto, usamos la propiedad faseVenta
+      if (typeof record[dataIndex] === 'object') {
+        return record[dataIndex]?.faseVenta?.toLowerCase().includes(value.toLowerCase());
+      }
+      // Si es un string, hacemos la comparación directamente
+      return record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase());
+    },
+    render: (text) => text || "No disponible",
+  });
+
+  const getColumnSearchProps2 = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          autoFocus
+          placeholder={`Buscar ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => confirm()}
+          style={{ width: 188, marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Buscar
+          </Button>
+          <Button
+            onClick={() => clearFilters && clearFilters()}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Resetear
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />,
+    onFilter: (value, record) => {
+      const lapsoTexto = `${record.cantidadLapso} ${record.unidadLapso}`.toLowerCase();
+      return lapsoTexto.includes(value.toLowerCase()); // Filtra correctamente por texto
+    },
+  });
+
+
+  const formatFechaHora = (fecha) => {
+    return format(new Date(fecha), 'yyyy-MM-dd/HH:mm');
+  };
+
   const columnas = [
     {
       title: "Fecha Actualización",
@@ -166,16 +181,16 @@ const InformeProyecto = () => {
       render: (fecha) =>
         fecha
           ? new Date(fecha).toLocaleString("es-ES", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false, // 24 horas, opcional
-            })
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false, // 24 horas, opcional
+          })
           : "No disponible",
-    },    
-    
+    },
+
     {
       title: "Fecha Cierre Probable",
       dataIndex: "fechaInicio",
@@ -190,8 +205,8 @@ const InformeProyecto = () => {
         const nombreMes = meses[parseInt(month, 10) - 1];
         return `${nombreMes} ${year}`;
       }
-      
-    },    
+
+    },
     {
       title: "Fase de Venta",
       dataIndex: "faseVenta",
@@ -205,7 +220,7 @@ const InformeProyecto = () => {
         // Si faseVenta es un string directamente
         return faseVenta || "No disponible";
       }
-    },    
+    },
     {
       title: "Monto Estimado",
       dataIndex: "montoEstimado",
@@ -230,12 +245,12 @@ const InformeProyecto = () => {
       key: "probabilidadVenta",
       render: (prob) => prob ?? "No disponible",
     },
-   /* {
-      title: "Lapso de Ejecución",
-      dataIndex: "lapsoEjecucion",
-      key: "lapsoEjecucion",
-      render: (lapso) => lapso || "No disponible",
-    },*/
+    /* {
+       title: "Lapso de Ejecución",
+       dataIndex: "lapsoEjecucion",
+       key: "lapsoEjecucion",
+       render: (lapso) => lapso || "No disponible",
+     },*/
     {
       title: "Observaciones",
       dataIndex: "observaciones",
@@ -257,8 +272,8 @@ const InformeProyecto = () => {
         ) : "Sin actividad";  // 🔹 Si no hay actividad, muestra "Sin actividad"
       }
     }
-    
-    
+
+
   ];
   const handleDownloadPDF = () => {
     const doc = new jsPDF({ orientation: "landscape" }); // Cambiar orientación a horizontal
@@ -286,26 +301,27 @@ const InformeProyecto = () => {
           "Probabilidad de Venta",
           "Observaciones",
           "Actividad"
-          
+
         ]
       ],
       body: oportunidades.map((oportunidad) => {
         const actividad = actividades.find(act => act.actualizacionId === oportunidad._id);
         return [
-        new Date(oportunidad.createdAt).toLocaleDateString("es-ES") || "No disponible", // Fecha Actualización
-        new Date(oportunidad.fechaInicio).toLocaleDateString("es-ES", {
-          year: "numeric",
-          month: "long", // Solo muestra el mes y el año
-        }) || "No disponible", // Fecha Inicio
-        oportunidad.faseVenta.faseVenta || "No disponible", // Fase de Venta
-        oportunidad.montoEstimado || "No disponible", // Monto Estimado
-        oportunidad.respComercial.nombreCompleto || "No disponible", // Responsable Comercial
-        oportunidad.respTecnico.nombreCompleto || "No disponible", // Responsable Técnico
-        oportunidad.probabilidadVenta || "No disponible", // Probabilidad de Venta
-        /*`${oportunidad.cantidadLapso || "No disponible"} ${oportunidad.unidadLapso || ""}` || "No disponible", // Lapso de Ejecución*/
-        oportunidad.observaciones || "No disponible", // Observaciones
-        actividad ? `${actividad.descripcionActividad} (${format(new Date(actividad.horaInicio), "yyyy-MM-dd/HH:mm")} - ${format(new Date(actividad.horaFin), "yyyy-MM-dd/HH:mm")})` : "Sin actividad"
-      ]}),
+          new Date(oportunidad.createdAt).toLocaleDateString("es-ES") || "No disponible", // Fecha Actualización
+          new Date(oportunidad.fechaInicio).toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "long", // Solo muestra el mes y el año
+          }) || "No disponible", // Fecha Inicio
+          oportunidad.faseVenta.faseVenta || "No disponible", // Fase de Venta
+          oportunidad.montoEstimado || "No disponible", // Monto Estimado
+          oportunidad.respComercial.nombreCompleto || "No disponible", // Responsable Comercial
+          oportunidad.respTecnico.nombreCompleto || "No disponible", // Responsable Técnico
+          oportunidad.probabilidadVenta || "No disponible", // Probabilidad de Venta
+          /*`${oportunidad.cantidadLapso || "No disponible"} ${oportunidad.unidadLapso || ""}` || "No disponible", // Lapso de Ejecución*/
+          oportunidad.observaciones || "No disponible", // Observaciones
+          actividad ? `${actividad.descripcionActividad} (${format(new Date(actividad.horaInicio), "yyyy-MM-dd/HH:mm")} - ${format(new Date(actividad.horaFin), "yyyy-MM-dd/HH:mm")})` : "Sin actividad"
+        ]
+      }),
       theme: "striped", // Agregar un tema para la tabla
       columnStyles: {
         0: { cellWidth: 30 }, // Ajustar ancho de columnas
@@ -313,11 +329,11 @@ const InformeProyecto = () => {
         2: { cellWidth: 30 },
         3: { cellWidth: 20 },
         4: { cellWidth: 35 },
-        5: { cellWidth: 35},
+        5: { cellWidth: 35 },
         6: { cellWidth: 25 },
-       /* 7: { cellWidth: 20 },*/
+        /* 7: { cellWidth: 20 },*/
         7: { cellWidth: 40 }, // Columna Observaciones más ancha
-        8: {cellWidth: 35}
+        8: { cellWidth: 35 }
       },
       tableWidth: "auto", // Ajustar automáticamente el tamaño de la tabla
       margin: { top: 40, left: 10, right: 10, bottom: 20 }, // Márgenes ajustados
@@ -379,15 +395,26 @@ const InformeProyecto = () => {
         >
           Informe de Oportunidad: {nombreProyecto}
         </Typography.Title>
-  
+
+
         <Space
           direction="vertical"
           size="middle"
           style={{ marginBottom: "clamp(16px, 4vw, 30px)", width: "100%" }}
         >
-          <Typography.Text>
-            <strong>Cliente:</strong> {cliente}
-          </Typography.Text>
+
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Typography.Text>
+                <strong>Cliente:</strong> {cliente}
+              </Typography.Text>
+            </Col>
+            <Col>
+              <Button type="primary" onClick={fetchClienteDetails} size="small">
+                Mostrar Detalles Cliente
+              </Button>
+            </Col>
+          </Row>
           <Typography.Text>
             <strong>Área:</strong> {area}
           </Typography.Text>
@@ -395,7 +422,7 @@ const InformeProyecto = () => {
             <strong>Código del Proyecto:</strong> {codigoProyecto}
           </Typography.Text>
         </Space>
-  
+
         <div style={{ width: "100%", overflowX: "auto" }}>
           <Table
             columns={columnas}
@@ -407,31 +434,58 @@ const InformeProyecto = () => {
             style={{ minWidth: "600px" }} // Asegura scroll lateral en móvil
           />
         </div>
-  
+
         <Button
-          type="primary"
-          onClick={handleDownloadPDF}
-          style={{
-            marginTop: "clamp(16px, 4vw, 20px)",
-            backgroundColor: "#808080",
-            borderColor: "#808080",
-            color: "white",
-            fontSize: "clamp(14px, 2.5vw, 16px)",
-            padding: "clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px)",
-          }}
-        >
-          🖨️
-        </Button>
-        <Button
-                        type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
-                        onClick={() => window.location.href = `/`}
-                    >
-                        Regresar
-                    </Button>
+  type="primary"
+  onClick={handleDownloadPDF}
+  style={{
+    marginTop: "auto",
+    backgroundColor: "#808080",
+    borderColor: "#808080",
+    color: "white",
+    fontSize: "15px", // Reducir el tamaño del texto
+    padding: "4px 12px", // Reducir el padding para hacerlo más pequeño
+    height: "auto", // Ajustar la altura automáticamente al contenido
+    width: "auto", // Ajustar el ancho automáticamente al contenido
+  }}
+  size="small"
+>
+  🖨️
+</Button>
+
+<Button
+  type="submit"
+  variant="contained"
+  color="primary"
+  fullWidth
+  sx={{ mt: 2 }}
+  onClick={() => window.location.href = `/proyectos`}
+  size="small"
+  style={{
+    fontSize: "15px", // Reducir el tamaño del texto
+    padding: "4px 8px", // Reducir el padding
+    height: "auto", // Ajustar la altura automáticamente al contenido
+    width: "auto", // Ajustar el ancho automáticamente al contenido
+  }}
+>
+  Regresar
+</Button>
+
+
       </div>
+      <Modal
+        title="Detalles del Cliente"
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+      >
+        <p><strong>Nombre:</strong> {nombreContacto}</p>
+        <p><strong>Correo:</strong> {correoContacto}</p>
+        <p><strong>Teléfono:</strong> {numeroContacto}</p>
+      </Modal>
     </div>
   );
-  
+
 };
 
 export default InformeProyecto;
