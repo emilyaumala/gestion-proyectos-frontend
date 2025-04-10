@@ -13,7 +13,7 @@ const Responsables = () => {
 
     useEffect(() => {
         axios
-            .get("https://crm.constecoin.com/apicrm/responsables")
+            .get("https://crm.constecoin.com/apicrm/responsables-activos")
             .then((response) => {
                 setFilteredData(response.data);
                 console.log(response.data)
@@ -36,18 +36,20 @@ const Responsables = () => {
         setModalVisible(false);
     };
 
-    const eliminarResponsable = (id) => {
-        console.log("eliminar responsable", id)
-        // axios
-        //     .delete(`https://crm.constecoin.com/apicrm/responsables/${id}`)
-        //     .then(() => {
-        //         setResponsables(responsables.filter((item) => item._id !== id));
-        //         setFilteredData(filteredData.filter((item) => item._id !== id));
-        //     })
-        //     .catch((error) => console.error("Error al eliminar responsable:", error));
+    const eliminarResponsable = async (id) => {
+        try {
+            await axios.put(`https://crm.constecoin.com/apicrm/responsables/${id}`, {
+                estadoActivo: false,
+                contraseña: "" // o null, según tu backend
+            });
+
+            // Eliminar el responsable del listado actual (estado)
+            setFilteredData(prev => prev.filter(item => item._id !== id));
+        } catch (error) {
+            console.error("Error al eliminar responsable:", error);
+        }
     };
 
-    // Filtro de búsqueda
     const getColumnSearchProps = (dataIndex, objProperty) => ({
         filterDropdown: ({
             setSelectedKeys,
@@ -142,14 +144,15 @@ const Responsables = () => {
         {
             title: "Acciones",
             key: "acciones",
-              render: (_, record) => (
+            render: (_, record) => (
                 <Button
-                  type="primary"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => showDelete(record._id)}
+                    type="primary"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => showDelete(record._id)}
                 />
-              ),
+
+            ),
         }
 
     ];
@@ -185,47 +188,72 @@ const Responsables = () => {
                     overflow: "hidden", // Previene scroll innecesario en el div principal
                 }}
             >
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%",
-                    marginBottom: "1rem",
-                    position: "relative"
-                }}>
-                    {/* Contenedor adicional para centrar el título independientemente del botón */}
-                    <div style={{ width: "100%", textAlign: "center", position: "absolute", left: 0, right: 0 }}>
-                        <h2 style={{
-                            color: "#333333",
-                            fontSize: "clamp(20px, 4vw, 28px)", // Escala en móvil/desktop
-                            margin: 0,
-                        }}>
-                            Lista de responsables
-                        </h2>
-                    </div>
-                    
-                    {/* Div vacío para mantener el espacio en la izquierda */}
-                    <div style={{ width: "40px" }}></div>
-                    
-                    {/* Botón a la derecha */}
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={irAgregarResponsable}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: "10px",
+                        width: "100%",
+                        padding: "10px 20px",
+                        position: "relative",
+                    }}
+                >
+                    <div style={{ width: "110px" }}></div>
+                    <h2
                         style={{
-                            backgroundColor: "#1890ff",
-                            borderColor: "#1890ff",
-                            borderRadius: "50%",
-                            width: "40px",
-                            height: "40px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1 // Para que esté por encima del título centrado
+                            flex: "1",
+                            textAlign: "center",
+                            fontSize: "clamp(20px, 4vw, 28px)",
+                            color: "#333",
+                            margin: 0,
                         }}
-                    />
+                    >
+                        Lista de responsables
+                    </h2>
+
+                    {/* Botones alineados a la derecha */}
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "10px",
+                        }}
+                    >
+                        <Button
+                            type="default"
+                            onClick={() => navigate("/responsables-eliminados")}
+                            style={{
+                                borderRadius: "8px",
+                                padding: "0 12px",
+                                height: "40px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            Ver eliminados
+                        </Button>
+
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={irAgregarResponsable}
+                            style={{
+                                backgroundColor: "#1890ff",
+                                borderColor: "#1890ff",
+                                borderRadius: "50%",
+                                width: "50px",
+                                height: "40px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        />
+                    </div>
                 </div>
-                
+
+
                 {/* Tabla con scroll horizontal si es necesario */}
                 <div style={{ width: "100%", overflowX: "auto" }}>
                     <Table
@@ -237,9 +265,27 @@ const Responsables = () => {
                             // lógica para ordenar
                         }}
                         style={{ minWidth: "600px" }}
+                
                     />
-                </div>
 
+                </div>
+                <Button
+                       type="submit"
+                       variant="contained"
+                       color="primary"
+                       fullWidth
+                       sx={{ mt: 2 }}
+                       onClick={() => window.location.href = `/`}
+                       size="small"
+                       style={{
+                         fontSize: "15px", // Reducir el tamaño del texto
+                         padding: "4px 8px", // Reducir el padding
+                         height: "auto", // Ajustar la altura automáticamente al contenido
+                         width: "80px", // Ajustar el ancho automáticamente al contenido
+                       }}
+                     >
+                       Regresar
+                     </Button>
                 <Modal
                     title="Confirmación"
                     open={modalVisible}
@@ -255,7 +301,9 @@ const Responsables = () => {
                     </div>
                 </Modal>
             </div>
+            
         </div>
+        
     );
 };
 export default Responsables;

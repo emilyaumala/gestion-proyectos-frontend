@@ -17,6 +17,7 @@ import AddCliente from "./AgregarCliente";
 import OportunidadesRes from "./OportunidadesRes";
 import NotificarOportunidad from "./NotificarOportunidad";
 import CalendarPage from "./Calendario";
+import ResponsablesEliminados from "./ResponsablesEliminados";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -87,6 +88,7 @@ function App() {
                             <Route path="/actualizar-oportunidades-res" element={<OportunidadesRes />} />
                             <Route path="/notificar-oportunidad" element={<NotificarOportunidad />} />
                             <Route path="/calendario" element={<CalendarPage />} />
+                            <Route path="/responsables-eliminados" element={<ResponsablesEliminados />} />
                         </>
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />
