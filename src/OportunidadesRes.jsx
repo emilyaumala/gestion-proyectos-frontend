@@ -107,6 +107,7 @@ function OportunidadesRes() {
           axios.get(`${API_URL}/fasesVenta`),
           axios.get(`${API_URL}/responsables`),
           axios.get(`${API_URL}/responsables`),
+          axios.get(`${API_URL}/responsables`),
         ]);
 
         setFasesVentaList(fasesRes.data);
@@ -531,6 +532,7 @@ function OportunidadesRes() {
                 renderInput={(params) => <TextField {...params} label="Seleccionar Colaboradores" />}
               />
             </Box>
+
             <Box sx={{ display: "flex", gap: 2 }}>
               <Box sx={{ flex: 1 }}>
                 <Typography fontWeight="bold">Fecha y Hora de Inicio:</Typography>

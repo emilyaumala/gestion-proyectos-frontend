@@ -80,7 +80,7 @@ function Home({ onLogout }) {
           <button style={styles.button} onClick={() => navigate("/forecast")}>
             📊 Proyección
           </button>
-          <button style={styles.button} onClick={() => handleClick('calendario')}>
+          <button style={styles.button} onClick={() => window.location.href = `https://outlook.office.com/calendar/view/workweek`}>
             📅 Calendario
           </button>
           {error && <p>{error}</p>}
