@@ -268,7 +268,7 @@ function Oportunidades() {
           color="#333333"
           sx={{ mb: 2, textAlign: "center", fontSize: { xs: "1.5rem", sm: "2rem" } }}
         >
-          Oportunidad del Proyecto
+          Actualizar Oportunidad
         </Typography>
 
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -305,7 +305,7 @@ function Oportunidades() {
         )}
 
         {areaSeleccionada && (
-          <TextField fullWidth select label="Seleccionar Proyecto" onChange={handleProyectoChange} margin="normal">
+          <TextField fullWidth select label="Seleccionar Oportunidad" onChange={handleProyectoChange} margin="normal">
             {proyectosFiltrados.map(proyecto => (
               <MenuItem key={proyecto._id} value={proyecto._id}>{proyecto.nombreProyecto}</MenuItem>
             ))}

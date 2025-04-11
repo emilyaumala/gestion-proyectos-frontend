@@ -126,7 +126,21 @@ function OportunidadesRes() {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [userId]);
+  }, [navigate]);
+
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get("token");
+
+    if (accessToken) {
+      localStorage.setItem("outlookToken", accessToken);
+      setToken(accessToken);
+      setShowActivityFields(true); // Mostrar los campos después del login
+      window.history.replaceState({}, document.title, window.location.pathname); // Eliminar el token de la URL
+    }
+  }, []);
+
 
   const formatDateToMonthYear = (dateString) => {
     const [year, month] = dateString.split("T")[0].split("-");
@@ -161,8 +175,7 @@ function OportunidadesRes() {
       }
     }
   };
-
-  const handleEnviar = async () => {
+  const handleEnviar = async (route) => {
     if (!proyectoSeleccionado) {
       setError("Selecciona un proyecto antes de enviar.");
       return;
@@ -184,7 +197,7 @@ function OportunidadesRes() {
         nombre: colaborador.nombreCompleto,
         correo: colaborador.correo
     })),
-      horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
       horaFin: horaFin,    // Recibimos la fecha y hora de fin combinadas
       nombreContacto: nombreContacto,
       numeroContacto: numeroContacto,
@@ -194,15 +207,16 @@ function OportunidadesRes() {
 
     try {
       const response = await axios.post(`${API_URL}/guardar1`, formattedData);
+      const formattedDataString = encodeURIComponent(JSON.stringify(formattedData))
+      window.location.href = `https://crm.constecoin.com/apicrm/auth/outlook?redirect=${route}&data=${formattedDataString}`
       alert("Actualización guardada exitosamente");
-      window.location.reload();
+      navigate("/actualizar-oportunidades");
       setError(null);
     } catch (error) {
       console.error("❌ Error al guardar el proyecto:", error);
       setError("Hubo un problema al guardar los datos. Inténtalo de nuevo.");
     }
   };
-
   const formatCurrency = (value) => {
     if (!value) return "$0.00";
     return new Intl.NumberFormat("en-US", {
@@ -243,12 +257,12 @@ function OportunidadesRes() {
           color="#333333"
           sx={{ mb: 2, textAlign: "center", fontSize: { xs: "1.5rem", sm: "2rem" } }}
         >
-          Oportunidad del Proyecto
+          Actualizar Oportunidad
         </Typography>
         <TextField
           fullWidth
           select
-          label="Seleccionar Proyecto"
+          label="Seleccionar Oportunidad"
           onChange={handleProyectoChange}
           value={proyectoSeleccionado ? proyectoSeleccionado._id : ""}
           margin="normal"
@@ -507,7 +521,6 @@ function OportunidadesRes() {
               <TextField
                 fullWidth
                 value={tituloActividad}
-                disabled={!editable}
                 onChange={(e) => setTituloActividad(e.target.value)}
               />
             </Box>
@@ -561,9 +574,9 @@ function OportunidadesRes() {
 
 
 
-        {proyectoSeleccionado && (
+{proyectoSeleccionado && (
           <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Button variant="contained" color="success" onClick={handleEnviar}>
+            <Button variant="contained" color="success" onClick={() => handleEnviar('home')}>
               Enviar
             </Button>
             <Button
@@ -578,7 +591,6 @@ function OportunidadesRes() {
 
     </Box>
   );
-
 }
 
 export default OportunidadesRes;

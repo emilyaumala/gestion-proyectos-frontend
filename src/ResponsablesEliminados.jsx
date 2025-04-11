@@ -208,22 +208,6 @@ const ResponsablesEliminados = () => {
 
                     <div style={{ width: "40px" }}></div>
 
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={irAgregarResponsable}
-                        style={{
-                            backgroundColor: "#1890ff",
-                            borderColor: "#1890ff",
-                            borderRadius: "50%",
-                            width: "40px",
-                            height: "40px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1,
-                        }}
-                    />
                 </div>
 
                 <div style={{ width: "100%", overflowX: "auto" }}>

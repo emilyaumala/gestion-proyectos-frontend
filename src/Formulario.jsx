@@ -211,38 +211,38 @@ function Formulario() {
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
 
 
-<TextField
-    fullWidth
-    label="Correo Electrónico del Contacto"
-    {...register("correoContacto", {
-        required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
-    })}
-    margin="normal"
-    error={Boolean(errors.correoContacto)}
-    helperText={errors.correoContacto?.message}
-/>
+                    <TextField
+                        fullWidth
+                        label="Correo Electrónico del Contacto"
+                        {...register("correoContacto", {
+                            required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
+                        })}
+                        margin="normal"
+                        error={Boolean(errors.correoContacto)}
+                        helperText={errors.correoContacto?.message}
+                    />
 
-<FormControl fullWidth sx={{ mt: 2 }}>
-    <Controller
-        name="numeroContacto"
-        control={control}
-        rules={{
-            required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
-        }}
-        render={({ field }) => (
-            <PhoneInput
-                international
-                defaultCountry="EC"
-                {...field}
-                onChange={(value) => field.onChange(value)}
-                style={{ width: "98%", padding: "10px", fontSize: "16px" }}
-            />
-        )}
-    />
-    {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
-</FormControl>
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <Controller
+                            name="numeroContacto"
+                            control={control}
+                            rules={{
+                                required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
+                            }}
+                            render={({ field }) => (
+                                <PhoneInput
+                                    international
+                                    defaultCountry="EC"
+                                    {...field}
+                                    onChange={(value) => field.onChange(value)}
+                                    style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+                                />
+                            )}
+                        />
+                        {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
+                    </FormControl>
 
-
+                    <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
                     {/* Area */}
                     {areaError && <Alert severity="error" sx={{ mb: 2 }}>{areaError}</Alert>}
                     <Autocomplete
@@ -270,7 +270,7 @@ function Formulario() {
 
 
                     {/* Nombre del Proyecto */}
-                    <TextField fullWidth label="Nombre del Proyecto" {...register("nombreProyecto", { required: true })} margin="normal" />
+                    <TextField fullWidth label="Nombre de la Oportunidad" {...register("nombreProyecto", { required: true })} margin="normal" />
                     {/* Código Oportunidad */}
                     <TextField fullWidth label="Código de Oportunidad AS2 (Opocional)" {...register("codigoProyecto")} margin="normal" placeholder="Solocitar el código de la oportunidad contador/a" />
                     {/* Fase de Venta */}
