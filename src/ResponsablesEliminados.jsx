@@ -179,51 +179,23 @@ const ResponsablesEliminados = () => {
                 <div
                     style={{
                         display: "flex",
-                        justifyContent: "space-between",
+                        flexDirection: "column",
                         alignItems: "center",
                         width: "100%",
                         marginBottom: "1rem",
-                        position: "relative",
+                        gap: "0.75rem", // espacio entre título y botones
                     }}
                 >
-                    <div
+                    <h2
                         style={{
-                            width: "100%",
+                            color: "#333333",
+                            fontSize: "clamp(20px, 4vw, 28px)",
+                            margin: 0,
                             textAlign: "center",
-                            position: "absolute",
-                            left: 0,
-                            right: 0,
                         }}
                     >
-                        <h2
-                            style={{
-                                color: "#333333",
-                                fontSize: "clamp(20px, 4vw, 28px)",
-                                margin: 0,
-                            }}
-                        >
-                            Responsables eliminados
-                        </h2>
-                    </div>
-
-                    <div style={{ width: "40px" }}></div>
-
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={irAgregarResponsable}
-                        style={{
-                            backgroundColor: "#1890ff",
-                            borderColor: "#1890ff",
-                            borderRadius: "50%",
-                            width: "40px",
-                            height: "40px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1,
-                        }}
-                    />
+                        Lista de responsables eliminados
+                    </h2>
                 </div>
 
                 <div style={{ width: "100%", overflowX: "auto" }}>

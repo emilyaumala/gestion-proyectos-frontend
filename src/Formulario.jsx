@@ -29,6 +29,7 @@ function Formulario() {
     const [responsablesComerciales, setResponsablesComerciales] = useState([]);
     const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
     const [responsables, setResponsables] = useState([]);
+    const [cliente, setCliente] = useState();
 
     const navigate = useNavigate(); // Inicializa navigate
 
@@ -201,46 +202,48 @@ function Formulario() {
                         onChange={(event1, value) => {
                             if (value && value.id) {
                                 setValue("cliente", value.id);
+                                setCliente(value.label);
                                 setClienteError("");
                             } else {
                                 setClienteError("Selecciona un cliente válido o pidele  al administrador que lo agregue.");
                             }
                         }}
                     />
+                    {console.log("Cliente seleccionado", cliente )}
                     {/* Nombre del Contacto */}
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
 
 
-<TextField
-    fullWidth
-    label="Correo Electrónico del Contacto"
-    {...register("correoContacto", {
-        required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
-    })}
-    margin="normal"
-    error={Boolean(errors.correoContacto)}
-    helperText={errors.correoContacto?.message}
-/>
+                    <TextField
+                        fullWidth
+                        label="Correo Electrónico del Contacto"
+                        {...register("correoContacto", {
+                            required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
+                        })}
+                        margin="normal"
+                        error={Boolean(errors.correoContacto)}
+                        helperText={errors.correoContacto?.message}
+                    />
 
-<FormControl fullWidth sx={{ mt: 2 }}>
-    <Controller
-        name="numeroContacto"
-        control={control}
-        rules={{
-            required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
-        }}
-        render={({ field }) => (
-            <PhoneInput
-                international
-                defaultCountry="EC"
-                {...field}
-                onChange={(value) => field.onChange(value)}
-                style={{ width: "98%", padding: "10px", fontSize: "16px" }}
-            />
-        )}
-    />
-    {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
-</FormControl>
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <Controller
+                            name="numeroContacto"
+                            control={control}
+                            rules={{
+                                required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
+                            }}
+                            render={({ field }) => (
+                                <PhoneInput
+                                    international
+                                    defaultCountry="EC"
+                                    {...field}
+                                    onChange={(value) => field.onChange(value)}
+                                    style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+                                />
+                            )}
+                        />
+                        {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
+                    </FormControl>
 
 
                     {/* Area */}
