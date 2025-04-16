@@ -209,7 +209,7 @@ function Formulario() {
                             }
                         }}
                     />
-                    {console.log("Cliente seleccionado", cliente )}
+                    {console.log("Cliente seleccionadooooo", cliente )}
                     {/* Nombre del Contacto */}
                     <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
 
