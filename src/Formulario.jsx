@@ -29,6 +29,8 @@ function Formulario() {
     const [responsablesComerciales, setResponsablesComerciales] = useState([]);
     const [responsablesTecnicos, setResponsablesTecnicos] = useState([]);
     const [responsables, setResponsables] = useState([]);
+    const [esOtroCliente, setEsOtroCliente] = useState(false);
+
 
     const navigate = useNavigate(); // Inicializa navigate
 
@@ -187,7 +189,10 @@ function Formulario() {
                     {clienteError && <Alert severity="error" sx={{ mb: 2 }}>{clienteError}</Alert>}
                     <Autocomplete
                         freeSolo
-                        options={clientes.map(cliente => ({ label: cliente.cliente, id: cliente._id }))}
+                        options={[
+                            ...clientes.map(cliente => ({ label: cliente.cliente, id: cliente._id })),
+                            { label: "Otro cliente", id: "otro" }
+                        ]}
                         onInputChange={(event1, newValue) => setValue("cliente", newValue)}
                         renderInput={(params) => (
                             <TextField
@@ -199,48 +204,62 @@ function Formulario() {
                             />
                         )}
                         onChange={(event1, value) => {
-                            if (value && value.id) {
+                            if (value?.id === "otro") {
+                                setEsOtroCliente(true);
+                                setClienteError("");
+                                setValue("cliente", value.label); // Guardar como texto
+                            } else if (value?.id) {
+                                setEsOtroCliente(false);
                                 setValue("cliente", value.id);
                                 setClienteError("");
                             } else {
-                                setClienteError("Selecciona un cliente válido o pidele  al administrador que lo agregue.");
+                                setEsOtroCliente(false);
+                                setClienteError("Selecciona un cliente válido o pídele al administrador que lo agregue.");
                             }
                         }}
                     />
-                    {/* Nombre del Contacto */}
-                    <TextField fullWidth label="Nombre del Contacto"  {...register("nombreContacto", { required: false })} margin="normal" />
+                    {!esOtroCliente && (
+                        <>
+                            <TextField
+                                fullWidth
+                                label="Nombre del Contacto"
+                                {...register("nombreContacto", { required: false })}
+                                margin="normal"
+                            />
 
+                            <TextField
+                                fullWidth
+                                label="Correo Electrónico del Contacto"
+                                {...register("correoContacto", {
+                                    required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
+                                })}
+                                margin="normal"
+                                error={Boolean(errors.correoContacto)}
+                                helperText={errors.correoContacto?.message}
+                            />
 
-                    <TextField
-                        fullWidth
-                        label="Correo Electrónico del Contacto"
-                        {...register("correoContacto", {
-                            required: !numeroContacto ? "Debe ingresar un correo o un número de contacto" : false,
-                        })}
-                        margin="normal"
-                        error={Boolean(errors.correoContacto)}
-                        helperText={errors.correoContacto?.message}
-                    />
-
-                    <FormControl fullWidth sx={{ mt: 2 }}>
-                        <Controller
-                            name="numeroContacto"
-                            control={control}
-                            rules={{
-                                required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
-                            }}
-                            render={({ field }) => (
-                                <PhoneInput
-                                    international
-                                    defaultCountry="EC"
-                                    {...field}
-                                    onChange={(value) => field.onChange(value)}
-                                    style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+                            <FormControl fullWidth sx={{ mt: 2 }}>
+                                <Controller
+                                    name="numeroContacto"
+                                    control={control}
+                                    rules={{
+                                        required: !correoContacto ? "Debe ingresar un número o un correo de contacto" : false,
+                                    }}
+                                    render={({ field }) => (
+                                        <PhoneInput
+                                            international
+                                            defaultCountry="EC"
+                                            {...field}
+                                            onChange={(value) => field.onChange(value)}
+                                            style={{ width: "98%", padding: "10px", fontSize: "16px" }}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                        {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
-                    </FormControl>
+                                {errors.numeroContacto && <Alert severity="error">{errors.numeroContacto.message}</Alert>}
+                            </FormControl>
+                        </>
+                    )}
+
 
                     <Typography fontWeight="bold">Datos de la Oportunidad :</Typography>
                     {/* Area */}
