@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Table, Input, Button, Space, Typography, Modal, Row, Col } from "antd";
+import { Table, Input, Button, Space, Typography, Modal, Row, Col, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
 import { autoTable } from "jspdf-autotable";
@@ -434,42 +434,42 @@ const InformeProyecto = () => {
             style={{ minWidth: "600px" }} // Asegura scroll lateral en móvil
           />
         </div>
-
+        <Tooltip title="Imprimir informe" placement="top">
+          <Button
+            type="primary"
+            onClick={handleDownloadPDF}
+            style={{
+              marginTop: "auto",
+              backgroundColor: "#808080",
+              borderColor: "#808080",
+              color: "white",
+              fontSize: "15px", // Reducir el tamaño del texto
+              padding: "4px 12px", // Reducir el padding para hacerlo más pequeño
+              height: "auto", // Ajustar la altura automáticamente al contenido
+              width: "auto", // Ajustar el ancho automáticamente al contenido
+            }}
+            size="small"
+          >
+            🖨️
+          </Button>
+        </Tooltip>
         <Button
-  type="primary"
-  onClick={handleDownloadPDF}
-  style={{
-    marginTop: "auto",
-    backgroundColor: "#808080",
-    borderColor: "#808080",
-    color: "white",
-    fontSize: "15px", // Reducir el tamaño del texto
-    padding: "4px 12px", // Reducir el padding para hacerlo más pequeño
-    height: "auto", // Ajustar la altura automáticamente al contenido
-    width: "auto", // Ajustar el ancho automáticamente al contenido
-  }}
-  size="small"
->
-  🖨️
-</Button>
-
-<Button
-  type="submit"
-  variant="contained"
-  color="primary"
-  fullWidth
-  sx={{ mt: 2 }}
-  onClick={() => window.location.href = `/proyectos`}
-  size="small"
-  style={{
-    fontSize: "15px", // Reducir el tamaño del texto
-    padding: "4px 8px", // Reducir el padding
-    height: "auto", // Ajustar la altura automáticamente al contenido
-    width: "auto", // Ajustar el ancho automáticamente al contenido
-  }}
->
-  Regresar
-</Button>
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={() => window.location.href = `/proyectos`}
+          size="small"
+          style={{
+            fontSize: "15px", // Reducir el tamaño del texto
+            padding: "4px 8px", // Reducir el padding
+            height: "auto", // Ajustar la altura automáticamente al contenido
+            width: "auto", // Ajustar el ancho automáticamente al contenido
+          }}
+        >
+          Regresar
+        </Button>
 
 
       </div>

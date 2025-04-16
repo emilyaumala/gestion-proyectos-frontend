@@ -4,11 +4,29 @@ import axios from "axios";
 import { SearchOutlined, PlusOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
+function useMediaQuery(query) {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
+
+        const listener = () => setMatches(media.matches);
+        media.addEventListener('change', listener);
+
+        return () => media.removeEventListener('change', listener);
+    }, [matches, query]);
+
+    return matches;
+}
+
 const Responsables = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentId, setCurrentId] = useState(null);
-
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -188,48 +206,55 @@ const Responsables = () => {
                     overflow: "hidden", // Previene scroll innecesario en el div principal
                 }}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                        gap: "10px",
+                <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    marginBottom: "1rem",
+                    position: "relative",
+                    flexDirection: isSmallScreen ? "column" : "row",
+                    gap: "0.5rem",
+                }}>
+                    {/* Contenedor para el título */}
+                    <div style={{
                         width: "100%",
-                        padding: "10px 20px",
-                        position: "relative",
-                    }}
-                >
-                    <div style={{ width: "110px" }}></div>
-                    <h2
-                        style={{
-                            flex: "1",
-                            textAlign: "center",
+                        textAlign: "center",
+                        position: isSmallScreen ? "relative" : "absolute",
+                        left: 0,
+                        right: 0,
+                        marginBottom: isSmallScreen ? "0rem" : 0
+                    }}>
+                        <h2 style={{
+                            color: "#333333",
                             fontSize: "clamp(20px, 4vw, 28px)",
-                            color: "#333",
                             margin: 0,
-                        }}
-                    >
-                        Lista de responsables
-                    </h2>
+                        }}>
+                            Lista de responsables
+                        </h2>
+                    </div>
 
-                    {/* Botones alineados a la derecha */}
-                    <div
-                        style={{
-                            display: "flex",
-                            gap: "10px",
-                        }}
-                    >
+                    {/* Div vacío para mantener el espacio en la izquierda */}
+                    {!isSmallScreen && <div style={{ width: "40px" }}></div>}
+
+                    {/* Contenedor de botones alineado a la derecha en pantallas normales, centrado en pequeñas */}
+                    <div style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        zIndex: 1,
+                        justifyContent: isSmallScreen ? "center" : "flex-end",
+                        width: isSmallScreen ? "100%" : "auto",
+                        marginTop: isSmallScreen ? "0rem" : 0
+                    }}>
                         <Button
                             type="default"
                             onClick={() => navigate("/responsables-eliminados")}
                             style={{
+                                height: "40px",
                                 borderRadius: "8px",
                                 padding: "0 12px",
-                                height: "40px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
+                                fontSize: "14px",
+                                whiteSpace: "nowrap"
                             }}
                         >
                             Ver eliminados
@@ -243,11 +268,11 @@ const Responsables = () => {
                                 backgroundColor: "#1890ff",
                                 borderColor: "#1890ff",
                                 borderRadius: "50%",
-                                width: "50px",
+                                width: "40px",
                                 height: "40px",
                                 display: "flex",
-                                alignItems: "center",
                                 justifyContent: "center",
+                                alignItems: "center"
                             }}
                         />
                     </div>
@@ -261,31 +286,28 @@ const Responsables = () => {
                         dataSource={filteredData}
                         rowKey="_id"
                         pagination={{ pageSize: 10 }}
-                        onChange={(pagination, filters, sorter) => {
-                            // lógica para ordenar
-                        }}
                         style={{ minWidth: "600px" }}
-                
+
                     />
 
                 </div>
                 <Button
-                       type="submit"
-                       variant="contained"
-                       color="primary"
-                       fullWidth
-                       sx={{ mt: 2 }}
-                       onClick={() => window.location.href = `/`}
-                       size="small"
-                       style={{
-                         fontSize: "15px", // Reducir el tamaño del texto
-                         padding: "4px 8px", // Reducir el padding
-                         height: "auto", // Ajustar la altura automáticamente al contenido
-                         width: "80px", // Ajustar el ancho automáticamente al contenido
-                       }}
-                     >
-                       Regresar
-                     </Button>
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={() => window.location.href = `/`}
+                    size="small"
+                    style={{
+                        fontSize: "15px", // Reducir el tamaño del texto
+                        padding: "4px 8px", // Reducir el padding
+                        height: "auto", // Ajustar la altura automáticamente al contenido
+                        width: "80px", // Ajustar el ancho automáticamente al contenido
+                    }}
+                >
+                    Regresar
+                </Button>
                 <Modal
                     title="Confirmación"
                     open={modalVisible}
@@ -301,9 +323,9 @@ const Responsables = () => {
                     </div>
                 </Modal>
             </div>
-            
+
         </div>
-        
+
     );
 };
 export default Responsables;

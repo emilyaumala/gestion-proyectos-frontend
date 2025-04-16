@@ -211,6 +211,7 @@ function Formulario() {
                             } else if (value?.id) {
                                 setEsOtroCliente(false);
                                 setValue("cliente", value.id);
+                                setCliente(value.label);
                                 setClienteError("");
                             } else {
                                 setEsOtroCliente(false);
