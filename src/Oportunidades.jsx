@@ -12,6 +12,7 @@ const API_URL = "https://crm.constecoin.com/apicrm";
 function Oportunidades() {
   const [proyectos, setProyectos] = useState([]);
   const [areas, setAreas] = useState([]);
+  const [clientes, setClientes] = useState([]);
   const [proyectosFiltrados, setProyectosFiltrados] = useState([]);
   const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
   const [areaSeleccionada, setAreaSeleccionada] = useState(null);
@@ -26,6 +27,7 @@ function Oportunidades() {
   const [codigoProyecto, setCodigoProyecto] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [respComercial, setRespComercial] = useState(null);
+  const [cliente, setCliente] = useState(null);
   const [respTecnico, setRespTecnico] = useState(null);
   const [probabilidadVenta, setProbabilidadVenta] = useState(null);
   const [nombreContacto, setNombreContacto] = useState("");
@@ -84,6 +86,8 @@ function Oportunidades() {
 
         const areasRes = await axios.get(`${API_URL}/areas`);
         setAreas(areasRes.data);
+        const clientesRes = await axios.get(`${API_URL}/clientes`);
+        setClientes(clientesRes.data);
 
         const probabilidadesRes = await axios.get(`${API_URL}/probabilidad-venta`);
         setProbabilidadesVentaList(probabilidadesRes.data);
@@ -163,6 +167,7 @@ function Oportunidades() {
         const data = response.data;
 
         setOportunidad(data);
+        setCliente(data.cliente)
         setFaseVenta(data.faseVenta);
         //setCodigoProyecto(data.codigoProyecto);
         setNombreContacto(data.nombreContacto);
@@ -186,6 +191,7 @@ function Oportunidades() {
       return;
     }
     const formattedData = {
+      cliente,
       nombreProyecto: proyectoSeleccionado.nombreProyecto,
       proyectoId: proyectoSeleccionado._id,
       faseVenta,
@@ -201,8 +207,8 @@ function Oportunidades() {
       colaboradorActividad: colaboradorActividad.map(colaborador => ({
         nombre: colaborador.nombreCompleto,
         correo: colaborador.correo
-    })),
-          horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
+      })),
+      horaInicio: horaInicio,  // Recibimos la fecha y hora de inicio combinadas
       horaFin: horaFin,    // Recibimos la fecha y hora de fin combinadas
       nombreContacto: nombreContacto,
       numeroContacto: numeroContacto,
@@ -273,7 +279,7 @@ function Oportunidades() {
 
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-        {/* Área de selección según el rol */}
+        {/* Área de selección según el rol 
         {roles.includes("admin") && (
           <TextField
             fullWidth
@@ -287,7 +293,7 @@ function Oportunidades() {
               <MenuItem key={area._id} value={area._id}>{area.area}</MenuItem>
             ))}
           </TextField>
-        )}
+        )}*/}
 
         {roles.includes("jefeArea") && (
           <TextField
@@ -322,6 +328,7 @@ function Oportunidades() {
                 if (editable) {
                   setOportunidad(prev => ({
                     ...prev,
+                    cliente,
                     faseVenta,
                     montoEstimado,
                     fechaInicio,
@@ -351,6 +358,62 @@ function Oportunidades() {
 
             {/* Campos */}
             {/* Fase de Venta */}
+            <Box>
+              <Typography fontWeight="bold">Cliente:</Typography>
+              {editable ? (
+                <Autocomplete
+                  fullWidth
+                  options={clientes}
+                  getOptionLabel={(option) => option.cliente}
+                  value={cliente}
+                  onChange={(e, newValue) => setCliente(newValue)}
+                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Cliente" />}
+                />
+              ) : (
+                <TextField fullWidth value={oportunidad.cliente.cliente} disabled />
+              )}
+            </Box>
+            <Box>
+              <Typography fontWeight="bold">Nombre Contacto:</Typography>
+              <TextField
+                fullWidth
+                value={nombreContacto}
+                disabled={!editable}
+                onChange={(e) => setNombreContacto(e.target.value)}
+              />
+            </Box>
+            {/* Fecha de Inicio */}
+            <Box>
+              <Typography fontWeight="bold">Correo Contacto:</Typography>
+              <TextField
+                fullWidth
+                value={correoContacto}
+                disabled={!editable}
+                onChange={(e) => setCorreoContacto(e.target.value)}
+              />
+            </Box>
+            {/* Fecha de Inicio */}
+            <Box>
+              <Typography fontWeight="bold">Número de Contacto:</Typography>
+
+              {editable ? (
+                <PhoneInput
+                  international
+                  defaultCountry="EC"
+                  value={numeroContacto}
+                  onChange={setNumeroContacto}
+                  style={{
+                    width: "97%",
+                    padding: "10px",
+                    fontSize: "16px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                />
+              ) : (
+                <TextField fullWidth value={numeroContacto} disabled />
+              )}
+            </Box>
             <Box>
               <Typography fontWeight="bold">Fase de Venta:</Typography>
               {editable ? (
@@ -454,47 +517,6 @@ function Oportunidades() {
               )}
             </Box>
             {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Nombre Contacto:</Typography>
-              <TextField
-                fullWidth
-                value={nombreContacto}
-                disabled={!editable}
-                onChange={(e) => setNombreContacto(e.target.value)}
-              />
-            </Box>
-            {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Correo Contacto:</Typography>
-              <TextField
-                fullWidth
-                value={correoContacto}
-                disabled={!editable}
-                onChange={(e) => setCorreoContacto(e.target.value)}
-              />
-            </Box>
-            {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Número de Contacto:</Typography>
-
-              {editable ? (
-                <PhoneInput
-                  international
-                  defaultCountry="EC"
-                  value={numeroContacto}
-                  onChange={setNumeroContacto}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    fontSize: "16px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-              ) : (
-                <TextField fullWidth value={numeroContacto} disabled />
-              )}
-            </Box>
             {/* Cantidad Lapso 
                       <Box>
                         <Typography fontWeight="bold">Cantidad Lapso:</Typography>
