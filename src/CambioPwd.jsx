@@ -191,7 +191,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '18px',
-    border: 'none',
     outline: 'none',
     appearance: 'none',
     WebkitAppearance: 'none',
