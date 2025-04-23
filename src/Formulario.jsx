@@ -104,6 +104,7 @@ function Formulario() {
             respComercial: esConstecoin ? null : data.respComercial,
             respTecnico: data.respTecnico,
             observaciones: data.observaciones || "Sin observaciones",
+            descripcionOPort : data.descripcionOPort || "Sin Descripción",
             nombreContacto: esConstecoin ? "NA" : (data.nombreContacto || "No hay nombre del contacto"),
             correoContacto: esConstecoin ? "NA" : (data.correoContacto || "No hay correo del contacto"),
             numeroContacto: esConstecoin ? "NA" : (data.numeroContacto || "No hay celular del contacto"),
@@ -378,10 +379,7 @@ function Formulario() {
                             }
                         }}
                     />
-
-                    {/* Observaciones */}
-                    <TextField fullWidth multiline rows={3} label="Descripción de Oportunidad" {...register("observaciones")} margin="normal" />
-
+                    <TextField fullWidth multiline rows={3} label="Descripción de Oportunidad" {...register("descripcionOport")} margin="normal" />
                     <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Guardar Oportunidad
                     </Button>

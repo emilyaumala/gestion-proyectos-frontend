@@ -17,6 +17,7 @@ import AddCliente from "./AgregarCliente";
 import OportunidadesRes from "./OportunidadesRes";
 import NotificarOportunidad from "./NotificarOportunidad";
 import ResponsablesEliminados from "./ResponsablesEliminados";
+import Actualizar from "./Actualizar";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -76,7 +77,8 @@ function App() {
                             <Route path="/" element={<Home onGoToForm={() => setShowForm(true)} onLogout={handleLogout} />} />
                             <Route path="/proyectos" element={<Proyectos />} />
                             <Route path="/formulario" element={<Formulario />} />
-                            <Route path="/actualizar-oportunidades" element={<Oportunidades />} />
+                            <Route path="/actualizar-oportunidades-area" element={<Oportunidades />} />
+                            <Route path="/actualizar-oportunidades" element={<Actualizar />} />
                             <Route path="/proyectos/:id/informe" element={<InformeProyecto />} />
                             <Route path="/forecast" element={<Proyeccion />} />
                             <Route path="/cambio-contrasenia" element={<CambioPwd onLogout={handleLogout} />} />
@@ -87,6 +89,7 @@ function App() {
                             <Route path="/actualizar-oportunidades-res" element={<OportunidadesRes />} />
                             <Route path="/notificar-oportunidad" element={<NotificarOportunidad />} />
                             <Route path="/responsables-eliminados" element={<ResponsablesEliminados />} />
+                            
                         </>
                     ) : (
                         <Route path="*" element={<Navigate to="/login" />} />

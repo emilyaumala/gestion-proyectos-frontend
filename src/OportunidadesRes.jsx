@@ -20,7 +20,7 @@ function OportunidadesRes() {
   const [editable, setEditable] = useState(false);
   const [buttonText, setButtonText] = useState("Editar");
   const [observaciones, setObservaciones] = useState("");
-
+  const [clientes, setClientes] = useState([]);
   const [faseVenta, setFaseVenta] = useState(null);
   const [montoEstimado, setMontoEstimado] = useState("");
   const [codigoProyecto, setCodigoProyecto] = useState("");
@@ -31,7 +31,7 @@ function OportunidadesRes() {
   const [nombreContacto, setNombreContacto] = useState("");
   const [correoContacto, setCorreoContacto] = useState("");
   const [numeroContacto, setNumeroContacto] = useState("");
-
+  const [cliente, setCliente] = useState(null);
 
   const [fasesVentaList, setFasesVentaList] = useState([]);
   const [probabilidadesVentaList, setProbabilidadesVentaList] = useState([]);
@@ -94,7 +94,8 @@ function OportunidadesRes() {
             ultimaActualizacion?.respTecnico === userId
           );
         });
-
+        const clientesRes = await axios.get(`${API_URL}/clientes`);
+        setClientes(clientesRes.data);
         setProyectosFiltrados(proyectosFiltrados);
         console.log("Proyectos filtrados: ", proyectosFiltrados)
         const areasRes = await axios.get(`${API_URL}/areas`);
@@ -157,18 +158,30 @@ function OportunidadesRes() {
       try {
         const response = await axios.get(`${API_URL}/oportunidades/${ultimaActualizacion.proyectoId}`);
         const data = response.data;
-
+console.log(data)
         setOportunidad(data);
+        setCliente(data.cliente);
         setFaseVenta(data.faseVenta);
-        setCodigoProyecto(data.codigoProyecto);
-        setCorreoContacto(data.correoContacto);
-        setNumeroContacto(data.numeroContacto);
-        setNombreContacto(data.nombreContacto);
-        setMontoEstimado(data.montoEstimado);
+
+        // Si el cliente es "CONSTECOIN", establece los valores a null
+        if (data.cliente.cliente === "CONSTECOIN") {
+          setNombreContacto(null);
+          setCorreoContacto(null);
+          setNumeroContacto(null);
+          setMontoEstimado(null);
+          setRespComercial(null);
+          setProbabilidadVenta(null);
+        } else {
+          setNombreContacto(data.nombreContacto);
+          setCorreoContacto(data.correoContacto);
+          setNumeroContacto(data.numeroContacto);
+          setMontoEstimado(data.montoEstimado);
+          setRespComercial(data.respComercial);
+          setProbabilidadVenta(data.probabilidadVenta);
+        }
+
         setFechaInicio(formatDateToMonthYear(data.fechaInicio));
-        setRespComercial(data.respComercial);
         setRespTecnico(data.respTecnico);
-        setProbabilidadVenta(data.probabilidadVenta);
       } catch (error) {
         console.error("❌ Error al obtener oportunidad:", error);
         setError("Hubo un problema al cargar la oportunidad.");
@@ -181,6 +194,7 @@ function OportunidadesRes() {
       return;
     }
     const formattedData = {
+      cliente,
       nombreProyecto: proyectoSeleccionado.nombreProyecto,
       proyectoId: proyectoSeleccionado._id,
       faseVenta,
@@ -312,49 +326,109 @@ function OportunidadesRes() {
             </Button>
 
             {/* Campos */}
-            {/* Fase de Venta */}
             <Box>
-              <Typography fontWeight="bold">Fase de Venta:</Typography>
+              <Typography fontWeight="bold">Cliente:</Typography>
               {editable ? (
                 <Autocomplete
                   fullWidth
-                  options={fasesVentaList}
-                  getOptionLabel={(option) => option.faseVenta}
-                  value={faseVenta}
-                  onChange={(e, newValue) => setFaseVenta(newValue)}
-                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Fase" />}
+                  options={clientes}
+                  getOptionLabel={(option) => option.cliente}
+                  value={cliente}
+                  onChange={(e, newValue) => setCliente(newValue)}
+                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Cliente" />}
                 />
               ) : (
-                <TextField fullWidth value={oportunidad.faseVenta.faseVenta} disabled />
+                <TextField fullWidth value={oportunidad.cliente.cliente} disabled />
               )}
             </Box>
-
-            {/* Monto Estimado */}
-            <Box>
-              <Typography fontWeight="bold">Monto Estimado:</Typography>
-              {editable ? (
-                <NumericFormat
-                  value={montoEstimado}
-                  thousandSeparator=","
-                  decimalSeparator="."
-                  decimalScale={2}
-                  allowNegative={false}
-                  prefix="$ "
-                  customInput={TextField}
-                  fullWidth
-                  label="Monto Estimado (USD)"
-                  margin="normal"
-                  onValueChange={(values) => setMontoEstimado(values.floatValue)} // Solo se pasa el número
-                />
-              ) : (
-                <TextField
-                  fullWidth
-                  value={formatCurrency(montoEstimado)} // Mostrar monto formateado si no está en modo de edición
-                  disabled
-                />
-              )}
-            </Box>
-
+  
+            {/* Nombre y Correo de Contacto */}
+            {!cliente || cliente.cliente !== "CONSTECOIN" ? (
+              <>
+                <Box>
+                  <Typography fontWeight="bold">Nombre Contacto:</Typography>
+                  <TextField
+                    fullWidth
+                    value={nombreContacto || ""}
+                    disabled={!editable}
+                    onChange={(e) => setNombreContacto(e.target.value)}
+                  />
+                </Box>
+  
+                <Box>
+                  <Typography fontWeight="bold">Correo Contacto:</Typography>
+                  <TextField
+                    fullWidth
+                    value={correoContacto}
+                    disabled={!editable}
+                    onChange={(e) => setCorreoContacto(e.target.value)}
+                  />
+                </Box>
+  
+                <Box>
+                  <Typography fontWeight="bold">Número de Contacto:</Typography>
+                  {editable ? (
+                    <PhoneInput
+                      international
+                      defaultCountry="EC"
+                      value={numeroContacto}
+                      onChange={setNumeroContacto}
+                      style={{
+                        width: "97%",
+                        padding: "10px",
+                        fontSize: "16px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  ) : (
+                    <TextField fullWidth value={numeroContacto} disabled />
+                  )}
+                </Box>
+  
+                <Box>
+                  <Typography fontWeight="bold">Fase de Venta:</Typography>
+                  {editable ? (
+                    <Autocomplete
+                      fullWidth
+                      options={fasesVentaList}
+                      getOptionLabel={(option) => option.faseVenta}
+                      value={faseVenta}
+                      onChange={(e, newValue) => setFaseVenta(newValue)}
+                      renderInput={(params) => <TextField {...params} placeholder="Seleccionar Fase" />}
+                    />
+                  ) : (
+                    <TextField fullWidth value={oportunidad.faseVenta.faseVenta} disabled />
+                  )}
+                </Box>
+  
+                <Box>
+                  <Typography fontWeight="bold">Monto Estimado:</Typography>
+                  {editable ? (
+                    <NumericFormat
+                      value={montoEstimado}
+                      thousandSeparator=","
+                      decimalSeparator="."
+                      decimalScale={2}
+                      allowNegative={false}
+                      prefix="$ "
+                      customInput={TextField}
+                      fullWidth
+                      label="Monto Estimado (USD)"
+                      margin="normal"
+                      onValueChange={(values) => setMontoEstimado(values.floatValue)} // Solo se pasa el número
+                    />
+                  ) : (
+                    <TextField
+                      fullWidth
+                      value={formatCurrency(montoEstimado)} // Mostrar monto formateado si no está en modo de edición
+                      disabled
+                    />
+                  )}
+                </Box>
+              </>
+            ) : null}
+  
             {/* Fecha de Inicio */}
             <Box>
               <Typography fontWeight="bold">Fecha de Cierre Probable:</Typography>
@@ -366,24 +440,26 @@ function OportunidadesRes() {
                 type="month"
               />
             </Box>
-
+  
             {/* Responsable Comercial */}
-            <Box>
-              <Typography fontWeight="bold">Responsable Comercial:</Typography>
-              {editable ? (
-                <Autocomplete
-                  fullWidth
-                  options={responsablesComerciales}
-                  getOptionLabel={(option) => option.nombreCompleto}
-                  value={respComercial}
-                  onChange={(e, newValue) => setRespComercial(newValue)}
-                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Comercial" />}
-                />
-              ) : (
-                <TextField fullWidth value={oportunidad.respComercial.nombreCompleto} disabled />
-              )}
-            </Box>
-
+            {!(cliente && cliente.cliente === "CONSTECOIN") && (
+              <Box>
+                <Typography fontWeight="bold">Responsable Comercial:</Typography>
+                {editable ? (
+                  <Autocomplete
+                    fullWidth
+                    options={responsablesComerciales}
+                    getOptionLabel={(option) => option.nombreCompleto}
+                    value={respComercial}
+                    onChange={(e, newValue) => setRespComercial(newValue)}
+                    renderInput={(params) => <TextField {...params} placeholder="Seleccionar Comercial" />}
+                  />
+                ) : (
+                  <TextField fullWidth value={oportunidad.respComercial.nombreCompleto} disabled />
+                )}
+              </Box>
+            )}
+  
             {/* Responsable Técnico */}
             <Box>
               <Typography fontWeight="bold">Responsable Técnico:</Typography>
@@ -400,92 +476,25 @@ function OportunidadesRes() {
                 <TextField fullWidth value={oportunidad.respTecnico.nombreCompleto} disabled />
               )}
             </Box>
-
-            {/* Cantidad Lapso 
-                      <Box>
-                        <Typography fontWeight="bold">Cantidad Lapso:</Typography>
-                        <TextField
-                          fullWidth
-                          value={cantidadLapso}
-                          disabled={!editable}
-                          onChange={(e) => setCantidadLapso(e.target.value)}
-                        />
-                      </Box>
-          
-                      {/* Unidad Lapso 
-                      <Box>
-                        <Typography fontWeight="bold">Unidad Lapso:</Typography>
-                        <TextField
-                          fullWidth
-                          select
-                          value={unidadLapso}
-                          disabled={!editable}
-                          onChange={(e) => setUnidadLapso(e.target.value)}
-                        >
-                          <MenuItem value="días">Día(s)</MenuItem>
-                          <MenuItem value="meses">Mes(es)</MenuItem>
-                          <MenuItem value="años">Año(s)</MenuItem>
-                        </TextField>
-                      </Box>*/}
-
+  
             {/* Probabilidad de Venta */}
-            <Box>
-              <Typography fontWeight="bold">Probabilidad de Venta:</Typography>
-              {editable ? (
-                <Autocomplete
-                  fullWidth
-                  options={probabilidadesVentaList}
-                  value={probabilidadVenta}
-                  onChange={(e, newValue) => setProbabilidadVenta(newValue)}
-                  renderInput={(params) => <TextField {...params} placeholder="Seleccionar Probabilidad" />}
-                />
-              ) : (
-                <TextField fullWidth value={oportunidad.probabilidadVenta} disabled />
-              )}
-            </Box>
-            {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Nombre Contacto:</Typography>
-              <TextField
-                fullWidth
-                value={nombreContacto}
-                disabled={!editable}
-                onChange={(e) => setNombreContacto(e.target.value)}
-              />
-            </Box>
-            {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Correo Contacto:</Typography>
-              <TextField
-                fullWidth
-                value={correoContacto}
-                disabled={!editable}
-                onChange={(e) => setCorreoContacto(e.target.value)}
-              />
-            </Box>
-            {/* Fecha de Inicio */}
-            <Box>
-              <Typography fontWeight="bold">Número de Contacto:</Typography>
-
-              {editable ? (
-                <PhoneInput
-                  international
-                  defaultCountry="EC"
-                  value={numeroContacto}
-                  onChange={setNumeroContacto}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    fontSize: "16px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                />
-              ) : (
-                <TextField fullWidth value={numeroContacto} disabled />
-              )}
-            </Box>
-
+            {!cliente || cliente.cliente !== "CONSTECOIN" ? (
+              <Box>
+                <Typography fontWeight="bold">Probabilidad de Venta:</Typography>
+                {editable ? (
+                  <Autocomplete
+                    fullWidth
+                    options={probabilidadesVentaList}
+                    value={probabilidadVenta}
+                    onChange={(e, newValue) => setProbabilidadVenta(newValue)}
+                    renderInput={(params) => <TextField {...params} placeholder="Seleccionar Probabilidad" />}
+                  />
+                ) : (
+                  <TextField fullWidth value={oportunidad.probabilidadVenta} disabled />
+                )}
+              </Box>
+            ) : null}
+  
             {/* Observaciones */}
             <Box>
               <Typography fontWeight="bold">Observaciones:</Typography>
@@ -498,99 +507,103 @@ function OportunidadesRes() {
                 placeholder="Escribe tus observaciones aquí..."
               />
             </Box>
-          </Box>
-        )}
-        {proyectoSeleccionado && (
-          // Botón + Actividad
-          <Box>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleToggleActivity}
-              sx={{ mb: 2 }}
-            >
-              + Actividad
-            </Button>
-          </Box>
-        )}
-
-        {proyectoSeleccionado && showActivityFields && (
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box>
-              <Typography fontWeight="bold">Titulo de la Actividad:</Typography>
-              <TextField
-                fullWidth
-                value={tituloActividad}
-                onChange={(e) => setTituloActividad(e.target.value)}
-              />
-            </Box>
-            <Typography fontWeight="bold">Descripción de la Actividad:</Typography>
-            <TextField
-              fullWidth
-              value={descripcionActividad}
-              onChange={(e) => setDescripcionActividad(e.target.value)}
-              multiline
-              rows={4}
-              placeholder="Descripción de la actividad"
-            />
-            <Box>
-              <Typography fontWeight="bold">Colaboradores:</Typography>
-              <Autocomplete
-                multiple
-                fullWidth
-                options={colaboradoresActividad}
-                getOptionLabel={(option) => option.nombreCompleto}
-                value={colaboradorActividad}
-                onChange={(event, newValue) => setColaboradorActividad(newValue)}
-                renderInput={(params) => <TextField {...params} label="Seleccionar Colaboradores" />}
-              />
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography fontWeight="bold">Fecha y Hora de Inicio:</Typography>
+  
+            {/* Actividad */}
+            {proyectoSeleccionado && (
+              <Box>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleToggleActivity}
+                  sx={{ mb: 2 }}
+                >
+                  + Actividad
+                </Button>
+              </Box>
+            )}
+  
+            {proyectoSeleccionado && showActivityFields && (
+              <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box>
+                  <Typography fontWeight="bold">Titulo de la Actividad:</Typography>
+                  <TextField
+                    fullWidth
+                    value={tituloActividad}
+                    onChange={(e) => setTituloActividad(e.target.value)}
+                  />
+                </Box>
+                <Typography fontWeight="bold">Descripción de la Actividad:</Typography>
                 <TextField
                   fullWidth
-                  type="datetime-local" // Combina fecha y hora
-                  value={horaInicio} // Guardamos tanto la fecha como la hora
-                  onChange={(e) => setHoraInicio(e.target.value)} // Actualizamos la fecha y hora de inicio
-                  disabled={!showActivityFields}
+                  value={descripcionActividad}
+                  onChange={(e) => setDescripcionActividad(e.target.value)}
+                  multiline
+                  rows={4}
+                  placeholder="Descripción de la actividad"
                 />
+                <Box>
+                  <Typography fontWeight="bold">Colaboradores:</Typography>
+                  <Autocomplete
+                    multiple
+                    fullWidth
+                    options={Array.isArray(colaboradoresActividad) ? colaboradoresActividad : []} // Evita errores si es undefined
+                    getOptionLabel={(option) => option?.nombreCompleto || "Desconocido"} // Evita errores si option es undefined
+                    value={Array.isArray(colaboradorActividad) ? colaboradorActividad : []} // Asegura que siempre sea un array
+                    onChange={(e, newValue) => setColaboradorActividad(newValue || [])} // Si newValue es null, usa []
+                    renderInput={(params) => (
+                      <TextField {...params} placeholder="Seleccionar Colaboradores" />
+                    )}
+                  />
+                </Box>
+  
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography fontWeight="bold">Fecha y Hora de Inicio:</Typography>
+                    <TextField
+                      fullWidth
+                      type="datetime-local" // Combina fecha y hora
+                      value={horaInicio} // Guardamos tanto la fecha como la hora
+                      onChange={(e) => setHoraInicio(e.target.value)} // Actualizamos la fecha y hora de inicio
+                      disabled={!showActivityFields}
+                    />
+                  </Box>
+  
+                  <Box sx={{ flex: 1 }}>
+                    <Typography fontWeight="bold">Fecha y Hora de Fin:</Typography>
+                    <TextField
+                      fullWidth
+                      type="datetime-local" // Combina fecha y hora
+                      value={horaFin} // Guardamos tanto la fecha como la hora
+                      onChange={(e) => setHoraFin(e.target.value)} // Actualizamos la fecha y hora de fin
+                      disabled={!showActivityFields}
+                    />
+                  </Box>
+                </Box>
               </Box>
-
-              <Box sx={{ flex: 1 }}>
-                <Typography fontWeight="bold">Fecha y Hora de Fin:</Typography>
-                <TextField
-                  fullWidth
-                  type="datetime-local" // Combina fecha y hora
-                  value={horaFin} // Guardamos tanto la fecha como la hora
-                  onChange={(e) => setHoraFin(e.target.value)} // Actualizamos la fecha y hora de fin
-                  disabled={!showActivityFields}
-                />
-              </Box>
+            )}
+  
+            {/* Botones Finales */}
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Button variant="contained" color="success" onClick={() => handleEnviar('home')}>
+                Enviar
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ mt: 2 }}
+                onClick={() => window.location.href = `/`}
+              >
+                Regresar
+              </Button>
             </Box>
-          </Box>
-        )}
-
-
-
-{proyectoSeleccionado && (
-          <Box sx={{ mt: 3, textAlign: "center" }}>
-            <Button variant="contained" color="success" onClick={() => handleEnviar('home')}>
-              Enviar
-            </Button>
-            <Button
-              type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}
-              onClick={() => window.location.href = `/`}
-            >
-              Regresar
-            </Button>
           </Box>
         )}
       </Box>
-
     </Box>
-  );
-}
+  )
+} 
+
 
 export default OportunidadesRes;
